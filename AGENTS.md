@@ -55,12 +55,20 @@ language: ko
 - 명확하고 의미 있는 변수명, 1글자 변수 지양  
 - 변경은 **최소·국소화**, 기존 스타일과 일관 유지  
 
+### 포매팅(Prettier 규칙 준수)
+- 포매팅은 Prettier 출력이 단일 진실(SSOT)이다. Prettier 경고/에러가 나오면 코드를 Prettier가 요구하는 형태로 고친다.
+- 트레일링 콤마: 가능하면 모두 사용(trailingComma: all) — 멀티라인 파라미터/객체/배열에 콤마 유지.
+- 긴 파라미터/구조분해는 줄바꿈하여 가독성을 확보한다.
+- Prettier와 ESLint 충돌 시 `eslint-config-prettier` 기준으로 Prettier 우선.
+- 변경 후 `yarn prettier` 또는 에디터 포맷 온 세이브를 통해 포매팅을 유지한다.
+
 ---
 
 ## ✅ 린트/품질 게이트
 - **린트 에러가 발생하면 반드시 수정한다.** 에러가 해결될 때까지 커밋/PR을 진행하지 않는다.  
 - `eslint-disable` 류 주석은 **예외 사유를 주석으로 명시**하고, PR 설명에도 근거를 남긴다.  
 - CI에서 **lint / type-check / test** 중 하나라도 실패하면 병합 금지.
+ - 모든 변경의 마지막에 `yarn lint:all`을 실행하여 e2e 포함 전역에 대해 ESLint/Prettier를 확인한다. (로컬 IDE 포맷이 기준과 다를 수 있으므로 스크립트 기준으로 재검증)
 
 ---
 
@@ -117,7 +125,7 @@ language: ko
 
 ## 🧪 테스트 원칙
 - 주요 사용자 경로(`home`, `search`, `auth`)는 반드시 E2E로 검증  
-- 세부 지침은 `agents/testing.md` 참조  
+- 세부 지침은 `.codex/agents/testing.md` 참조  
 - 테스트는 빠르고 독립적이어야 하며, 외부 의존성은 최소화  
 
 ---

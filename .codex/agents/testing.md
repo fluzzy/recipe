@@ -22,36 +22,33 @@ Global 규칙(`AGENTS.md`)보다 **우선(precedence 120)** 적용된다.
 ---
 
 ## 📁 폴더 구조 (기능 기준 + 전제 접미사)
-기능(도메인)별 폴더만 만들고, **로그인/비로그인 전제는 파일명 접미사로 구분**한다.
+기능(도메인)별 폴더만 만들고, **로그인/비로그인/공통 전제는 파일명 접미사로 구분**한다.
 
 ```text
 e2e/
-├── specs/
-│  ├── like/
-│  │  ├── like.auth.spec.ts    # 로그인 사용자
-│  │  └── like.guest.spec.ts   # 비로그인 사용자
-│  ├── comment/
-│  │  ├── comment.auth.spec.ts
-│  │  └── comment.guest.spec.ts
-│  ├── bookmark/
-│  │  ├── bookmark.auth.spec.ts
-│  │  └── bookmark.guest.spec.ts
+├── pages/                           # Page UI 테스트 (원하면 여기도 common 가능)
+│   └── home/
+│       ├── home.auth.spec.ts
+│       ├── home.guest.spec.ts
+│       └── home.common.spec.ts      # 선택: 페이지 레벨 공통
+├── scenarios/                       # 사용자 플로우 테스트
+│   └── like/
+│       ├── like.auth.spec.ts
+│       ├── like.guest.spec.ts
+│       └── like.common.spec.ts      # ✅ 공통(권한 무관) 시나리오
 ├── fixtures/
-│  ├── auth.fixture.ts
-│  └── guest.fixture.ts
-├── page-objects/
-│  ├── base.page.ts
-│  ├── recipe.page.ts
-│  └── navbar.fragment.ts
-├── utils/
-│  ├── test-helpers.ts
-│  └── visual-helpers.ts
+│   └── auth/storage-state.json
 └── playwright.config.ts
 ```
 
 * **로그인 전제**: `*.auth.spec.ts`
 * **비로그인 전제**: `*.guest.spec.ts`
+* **공통 전제**: `*.common.spec.ts` 
 * 파일명은 `기능.전제.spec.ts` 형식을 유지한다(예: `like.auth.spec.ts`).
+* 파일 접미사: *.guest.spec.ts, *.auth.spec.ts, *.common.spec.ts
+* 게스트 전용 프로젝트: (guest|common)만 매칭
+* 인증 전용 프로젝트: (auth|common)만 매칭
+* “전체” 실행은 모든 프로젝트
 
 
 ## ▶ 실행 명령
@@ -60,6 +57,7 @@ e2e/
 * UI 모드: `yarn test:e2e:ui`
 * Headed: `yarn test:e2e:headed`
 * 리포트: `yarn test:e2e:report`
+
 
 ---
 
