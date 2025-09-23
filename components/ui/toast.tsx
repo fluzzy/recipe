@@ -106,7 +106,7 @@ const ToastDescription = React.forwardRef<
   <ToastPrimitives.Description
     ref={ref}
     className={cn('text-sm opacity-90', className)}
-    data-cy='toast'
+    data-testid='toast'
     {...props}
   />
 ));

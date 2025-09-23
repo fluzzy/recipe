@@ -6,14 +6,21 @@
     "dev": "next dev",
     "build": "prisma generate && next build",
     "start": "next start",
-    "lint": "tsc && next lint",
+    "lint": "tsc && eslint . --ext .ts,.tsx,.js,.mjs",
+    "lint:fix": "eslint . --ext .ts,.tsx,.js,.mjs --fix",
+    "lint:all": "eslint . --ext .ts,.tsx --max-warnings=0",
     "prettier": "npx prettier -w .",
     "prepare": "husky",
     "schema": "npx prisma migrate dev",
     "prisma": "npx prisma studio",
     "postinstall": "prisma generate",
-    "e2e:open": "cypress open",
-    "e2e:chrome": "cypress run --browser chrome"
+    "test:e2e": "playwright test",
+    "test:e2e:guest": "playwright test --project=ui-guest-chromium --project=ui-guest-webkit --project=scen-guest-chromium --project=scen-guest-webkit",
+    "test:e2e:auth": "playwright test --project=ui-auth-chromium --project=ui-auth-webkit --project=scen-auth-chromium --project=scen-auth-webkit",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:headed": "playwright test --headed",
+    "test:e2e:report": "playwright show-report",
+    "codegen": "playwright codegen http://localhost:3000"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
@@ -44,13 +51,13 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@playwright/test": "^1.55.0",
     "@prisma/client": "^6.1.0",
     "@trivago/prettier-plugin-sort-imports": "^5.2.0",
     "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "cypress": "^13.17.0",
     "eslint": "^9",
     "eslint-config-next": "15.1.2",
     "eslint-config-prettier": "^9.1.0",
@@ -69,7 +76,7 @@
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx,css,scss}": [
-      "eslint"
+      "eslint --fix"
     ]
   }
 }

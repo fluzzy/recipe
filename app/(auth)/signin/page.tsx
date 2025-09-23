@@ -80,7 +80,7 @@ export default function SignIn() {
                     <FormControl>
                       <Input
                         placeholder='example@example.com'
-                        data-cy='email-input'
+                        data-testid='email-input'
                         {...field}
                       />
                     </FormControl>
@@ -98,7 +98,7 @@ export default function SignIn() {
                       <Input
                         placeholder='password'
                         type='password'
-                        data-cy='password-input'
+                        data-testid='password-input'
                         {...field}
                       />
                     </FormControl>
