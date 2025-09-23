@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "prisma generate && next build",
     "start": "next start",
-    "lint": "tsc && next lint",
+    "lint": "tsc && eslint . --ext .ts,.tsx,.js,.mjs",
+    "lint:fix": "eslint . --ext .ts,.tsx,.js,.mjs --fix",
     "lint:all": "eslint . --ext .ts,.tsx --max-warnings=0",
     "prettier": "npx prettier -w .",
     "prepare": "husky",
@@ -75,7 +76,7 @@
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx,css,scss}": [
-      "eslint"
+      "eslint --fix"
     ]
   }
 }
