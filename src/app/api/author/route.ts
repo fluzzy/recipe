@@ -1,34 +1,33 @@
+import { Prisma } from '@prisma/client';
 import { NextResponse } from 'next/server';
-import { requireAdmin, requireUser } from '~/actions/auth-guards';
+import { requireAdmin } from '~/actions/auth-guards';
 import { STATUS_CODE } from '~/constants/api';
 import prisma from '~/lib/prisma';
+import { authorInclude } from '~/lib/prisma/index';
 import {
   uploadAuthorSchema,
   UploadAuthorValue,
 } from '~/utils/validation/upload';
 import { ErrorResponse } from '../lib/common';
 
-type Author = {
-  id: string;
-  name: string;
-  imageUrl: string | null;
-  createdAt: Date;
-  updatedAt: Date;
-  youtubeUrl: string | null;
-  youtubeId: string | null;
-};
+type Author = Prisma.AuthorGetPayload<{ include: typeof authorInclude }>;
 
 export type GetAuthorApi = Array<Author>;
 
 export const GET = async () => {
   try {
-    await requireUser();
-    const authors = await prisma.author.findMany();
+    const authors = await prisma.author.findMany({
+      include: authorInclude,
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
     return NextResponse.json(authors, {
       status: STATUS_CODE.SUCCESS,
     });
-  } catch (error: any) {
-    return ErrorResponse(error.message, error.status);
+  } catch (error: unknown) {
+    const err = error as { message: string; status?: number };
+    return ErrorResponse(err.message, err.status);
   }
 };
 
@@ -60,7 +59,8 @@ export const POST = async (request: Request) => {
         status: STATUS_CODE.CREATED,
       },
     );
-  } catch (error: any) {
-    return ErrorResponse(error.message, error.status);
+  } catch (error: unknown) {
+    const err = error as { message: string; status?: number };
+    return ErrorResponse(err.message, err.status);
   }
 };
