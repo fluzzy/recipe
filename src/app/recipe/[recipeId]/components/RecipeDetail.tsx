@@ -86,7 +86,7 @@ export default async function RecipeDetail({ params }: RecipeDetailProps) {
                 {tags.map((tag, index) => (
                   <Text
                     key={index}
-                    className='rounded-full bg-purple-100 px-3 py-1 text-main'
+                    className='text-main rounded-full bg-purple-100 px-3 py-1'
                   >
                     {tag}
                   </Text>

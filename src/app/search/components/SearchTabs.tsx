@@ -17,7 +17,7 @@ export default function SearchTabs() {
   ];
 
   return (
-    <nav className='mb-6 mt-4 flex'>
+    <nav className='mt-4 mb-6 flex'>
       {Tabs.map((tab) => {
         const newQuery = { ...currentParams };
 
@@ -34,7 +34,7 @@ export default function SearchTabs() {
               'flex h-10 flex-1 items-center justify-center font-medium transition-colors',
               'hover:bg-muted',
               tab.value === key
-                ? 'border-b-2 border-primary text-primary'
+                ? 'border-primary text-primary border-b-2'
                 : 'text-muted-foreground',
             )}
             href={{

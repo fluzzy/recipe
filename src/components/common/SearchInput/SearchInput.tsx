@@ -35,7 +35,7 @@ export default function SearchInput() {
           name={SearchQueryKey}
           render={({ field }) => (
             <FormItem>
-              <div className='absolute left-1.5 top-1/2 -translate-y-1/2 transform'>
+              <div className='absolute top-1/2 left-1.5 -translate-y-1/2 transform'>
                 <Search size={18} className='text-muted-foreground' />
               </div>
               <FormControl>

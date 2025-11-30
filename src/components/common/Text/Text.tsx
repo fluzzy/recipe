@@ -41,8 +41,7 @@ const textVariants = cva('', {
 });
 
 interface TextProps
-  extends React.HTMLAttributes<HTMLElement>,
-    VariantProps<typeof textVariants> {
+  extends React.HTMLAttributes<HTMLElement>, VariantProps<typeof textVariants> {
   children: React.ReactNode;
   as?: React.ElementType;
   className?: string;
