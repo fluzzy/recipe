@@ -12,6 +12,7 @@
     "prettier": "npx prettier -w .",
     "prepare": "husky",
     "schema": "prisma migrate dev --schema prisma/schema",
+    "schema:pull": "npx prisma db pull --schema prisma/schema",
     "prisma": "prisma studio --schema prisma/schema",
     "postinstall": "prisma generate --schema prisma/schema",
     "test:e2e": "playwright test",

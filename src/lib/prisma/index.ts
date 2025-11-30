@@ -4,7 +4,7 @@ export const recipeSelect = {
   thumbnailUrl: true,
   tags: true,
   viewCount: true,
-  author: {
+  Author: {
     select: {
       name: true,
     },

@@ -63,7 +63,7 @@ erDiagram
 "Comment" }o--o| "users_sync" : user
 "Like" }o--|| "Recipe" : recipe
 "Like" }o--|| "users_sync" : user
-"Recipe" }o--|| "Author" : author
+"Recipe" }o--|| "Author" : Author
 "Recipe" }o--|| "users_sync" : user
 ```
 

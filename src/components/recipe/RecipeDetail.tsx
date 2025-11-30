@@ -24,7 +24,7 @@ export default async function RecipeDetail({ params }: RecipeDetailProps) {
 
   const {
     title,
-    author,
+    Author: author,
     viewCount,
     _count,
     ingredients,

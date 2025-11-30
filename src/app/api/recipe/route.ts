@@ -1,5 +1,5 @@
 import { after, NextRequest, NextResponse } from 'next/server';
-import { ERROR_MESSAGE, STATUS_CODE } from '~/constants/api';
+import { STATUS_CODE } from '~/constants/api';
 import { RecipeQueryKey } from '~/constants/key';
 import { requireAdmin } from '~/lib/authz';
 import prisma from '~/lib/prisma';
@@ -28,7 +28,7 @@ export type Recipe = {
   _count: {
     likes: number;
   };
-  author: {
+  Author: {
     name: string;
     imageUrl: string;
   };
@@ -58,7 +58,7 @@ export const GET = async (request: NextRequest) => {
             likes: true,
           },
         },
-        author: {
+        Author: {
           select: {
             name: true,
             imageUrl: true,

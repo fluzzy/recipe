@@ -1,6 +1,3 @@
-// Neon Auth에서 관리하는 users_sync 테이블
-// 실제 테이블은 neon_auth 스키마에 있으며, Neon Auth가 자동으로 관리함
-// Prisma는 이미 존재하는 테이블을 감지하고 건드리지 않음
 model User {
   rawJson   Json      @map("raw_json")
   id        String    @id @default(dbgenerated("(raw_json ->> 'id'::text)"))
@@ -27,7 +24,7 @@ model Author {
   youtubeId  String?
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
-  recipes    Recipe[]
+  Recipe     Recipe[]
 
   @@schema("public")
 }
@@ -78,7 +75,7 @@ model Recipe {
   tip          String?
   comments     Comment[]
   likes        Like[]
-  author       Author    @relation(fields: [authorID], references: [id])
+  Author       Author    @relation(fields: [authorID], references: [id])
   user         User      @relation(fields: [userId], references: [id])
 
   @@schema("public")
