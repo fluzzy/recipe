@@ -9,6 +9,7 @@ import { RecipeQueryKey } from '~/constants/key';
 import { PAGE_ROUTES } from '~/constants/route';
 import { http } from '~/lib/http';
 import Tip from './Tip';
+import YouTubeEmbed from './YouTubeEmbed';
 
 interface RecipeDetailProps {
   params: Promise<{ recipeId: string }>;
@@ -32,6 +33,7 @@ export default async function RecipeDetail({ params }: RecipeDetailProps) {
     steps,
     tags,
     tip,
+    youtubeUrl,
   } = data;
 
   return (
@@ -121,6 +123,12 @@ export default async function RecipeDetail({ params }: RecipeDetailProps) {
             </CardContent>
           </Card>
         </section>
+
+        {youtubeUrl && (
+          <section>
+            <YouTubeEmbed url={youtubeUrl} />
+          </section>
+        )}
 
         <section>
           <Card>
