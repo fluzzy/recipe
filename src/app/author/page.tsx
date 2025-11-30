@@ -3,6 +3,8 @@ import Text from '~/components/common/Text/Text';
 import AuthorCard from '~/components/home/AuthorCard';
 import { http } from '~/lib/http';
 
+export const revalidate = 604800;
+
 export default async function AuthorsPage() {
   const authors = await http<GetAuthorApi>('/api/author');
 

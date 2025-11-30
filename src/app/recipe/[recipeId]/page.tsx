@@ -2,6 +2,8 @@ import { Suspense } from 'react';
 import RecipeDetail from '~/components/recipe/RecipeDetail';
 import { Spinner } from '~/components/ui/spinner';
 
+export const revalidate = 604800;
+
 export default async function Recipe({
   params,
 }: {

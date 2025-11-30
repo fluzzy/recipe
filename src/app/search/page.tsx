@@ -3,6 +3,8 @@ import SearchItems from '~/components/search/SearchItems';
 import { Spinner } from '~/components/ui/spinner';
 import { SearchQueryKey, SearchTabKey } from '~/constants/key';
 
+export const revalidate = 604800;
+
 export type SearchParams = Promise<{
   [SearchQueryKey]: string;
   [SearchTabKey]?: string;

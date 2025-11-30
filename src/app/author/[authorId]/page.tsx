@@ -6,6 +6,8 @@ import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import { Card, CardContent } from '~/components/ui/card';
 import { http } from '~/lib/http';
 
+export const revalidate = 604800;
+
 interface AuthorPageProps {
   params: Promise<{
     authorId: string;
