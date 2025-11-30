@@ -11,11 +11,8 @@ import { stackServerApp } from '~/stack';
 
 export default async function ProfileHeader() {
   const user = await stackServerApp.getUser();
-  console.log(user);
   const { signOut } = stackServerApp.urls;
   const userProfile = await getUserDetails(user?.id);
-
-  console.log(userProfile);
 
   return (
     <header className='z-10 flex w-full items-center justify-between px-6 py-4'>
@@ -25,7 +22,7 @@ export default async function ProfileHeader() {
 
       {user ? (
         <Popover>
-          <PopoverTrigger>
+          <PopoverTrigger className='cursor-pointer'>
             <Avatar>
               <AvatarImage
                 src={
