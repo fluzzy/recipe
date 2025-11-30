@@ -1,11 +1,11 @@
 import { Lightbulb } from 'lucide-react';
-import Text from '~/components/common/Text/Text';
+import { Text } from '~/components/common/Text';
 
 interface TipProps {
   tip?: string;
 }
 
-export default function Tip({ tip }: TipProps) {
+export function Tip({ tip }: TipProps) {
   if (!tip) return null;
 
   return (

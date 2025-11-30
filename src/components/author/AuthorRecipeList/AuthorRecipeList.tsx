@@ -2,8 +2,8 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { GetAuthorRecipesApi } from '~/app/api/author/[authorId]/recipes/route';
-import Text from '~/components/common/Text/Text';
-import RecipeCard from '~/components/home/RecipeCard';
+import { Text } from '~/components/common/Text';
+import { RecipeCard } from '~/components/home/RecipeCard';
 import { useToast } from '~/hooks/use-toast';
 import { http } from '~/lib/http';
 
@@ -11,7 +11,7 @@ interface AuthorRecipeListProps {
   authorId: string;
 }
 
-export default function AuthorRecipeList({ authorId }: AuthorRecipeListProps) {
+export function AuthorRecipeList({ authorId }: AuthorRecipeListProps) {
   const [recipes, setRecipes] = useState<GetAuthorRecipesApi['recipes']>([]);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(true);

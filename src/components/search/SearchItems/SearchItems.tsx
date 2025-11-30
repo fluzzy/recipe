@@ -1,12 +1,12 @@
 import { GetSearchApi } from '~/app/api/search/route';
 import { SearchParams } from '~/app/search/page';
-import AuthorCard from '~/components/home/AuthorCard';
-import RecipeCard from '~/components/home/RecipeCard';
-import IngredientRecipeCard from '~/components/search/IngredientRecipeCard';
+import { AuthorCard } from '~/components/home/AuthorCard';
+import { RecipeCard } from '~/components/home/RecipeCard';
+import { IngredientRecipeCard } from '~/components/search/IngredientRecipeCard';
 import { SearchQueryKey, SearchTabKey, SearchTabValue } from '~/constants/key';
 import { http } from '~/lib/http';
 
-export default async function SearchItems({
+export async function SearchItems({
   searchParams,
 }: {
   searchParams: SearchParams;

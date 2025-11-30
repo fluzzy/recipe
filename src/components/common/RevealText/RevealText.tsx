@@ -2,7 +2,7 @@ interface RevealTextProps {
   text: string;
 }
 
-export default function RevealText({ text }: RevealTextProps) {
+export function RevealText({ text }: RevealTextProps) {
   return (
     <>
       <div className='overflow-hidden text-xl leading-6 font-bold text-white'>

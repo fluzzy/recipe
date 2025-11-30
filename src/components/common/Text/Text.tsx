@@ -1,5 +1,5 @@
-import * as React from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
+import * as React from 'react';
 import { cn } from '~/lib/utils';
 
 const textVariants = cva('', {
@@ -47,7 +47,7 @@ interface TextProps
   className?: string;
 }
 
-export default function Text({
+export function Text({
   children,
   size = 'body',
   as: Component = 'p',

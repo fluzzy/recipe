@@ -5,7 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import { SearchTabKey, SearchTabValue } from '~/constants/key';
 import { cn } from '~/lib/utils';
 
-export default function SearchTabs() {
+export function SearchTabs() {
   const searchParams = useSearchParams();
   const currentParams = Object.fromEntries(searchParams.entries());
   const key = searchParams.get(SearchTabKey) || SearchTabValue.TITLE;

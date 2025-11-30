@@ -1,20 +1,20 @@
 import Link from 'next/link';
 import { GetRecipeApi } from '~/app/api/recipe/route';
 import { RecipePageParams } from '~/app/recipe/[recipeId]/page';
-import Text from '~/components/common/Text/Text';
+import { Text } from '~/components/common/Text';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import { Button } from '~/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card';
 import { RecipeQueryKey } from '~/constants/key';
 import { PAGE_ROUTES } from '~/constants/route';
 import { http } from '~/lib/http';
-import ServingScalerModal from './ServingScalerModal';
-import Tip from './Tip';
-import YouTubeEmbed from './YouTubeEmbed';
+import { ServingScalerModal } from '../ServingScalerModal';
+import { Tip } from '../Tip';
+import { YouTubeEmbed } from '../YouTubeEmbed';
 
 type RecipeDetailProps = RecipePageParams;
 
-export default async function RecipeDetail({ params }: RecipeDetailProps) {
+export async function RecipeDetail({ params }: RecipeDetailProps) {
   const id = (await params).recipeId;
   const data = await http<GetRecipeApi>(`/api/recipe?${RecipeQueryKey}=${id}`);
 

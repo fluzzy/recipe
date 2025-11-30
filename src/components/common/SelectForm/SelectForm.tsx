@@ -14,7 +14,7 @@ interface SelectFormProps {
   onChange: () => void;
 }
 
-export default function SelectForm({
+export function SelectForm({
   children,
   value,
   placeholder,

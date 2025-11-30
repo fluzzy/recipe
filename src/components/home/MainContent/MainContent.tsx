@@ -1,10 +1,10 @@
 import { GetMainApi } from '~/app/api/main/route';
-import Text from '~/components/common/Text/Text';
+import { Text } from '~/components/common/Text';
 import { http } from '~/lib/http';
-import AuthorCard from './AuthorCard';
-import RecipeCard from './RecipeCard';
+import { AuthorCard } from '../AuthorCard';
+import { RecipeCard } from '../RecipeCard';
 
-export default async function MainContent() {
+export async function MainContent() {
   const data = await http<GetMainApi>('/api/main');
 
   return (

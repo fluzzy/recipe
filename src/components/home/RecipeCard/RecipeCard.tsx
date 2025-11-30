@@ -8,7 +8,7 @@ interface RecipeCardProps {
   recipe: Recipe;
 }
 
-export default function RecipeCard({ recipe }: RecipeCardProps) {
+export function RecipeCard({ recipe }: RecipeCardProps) {
   const { id, title, tags, Author: author, viewCount, _count } = recipe;
 
   return (

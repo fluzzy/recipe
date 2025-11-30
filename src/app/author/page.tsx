@@ -1,7 +1,7 @@
 import { GetAuthorApi } from '~/app/api/author/route';
-import Text from '~/components/common/Text/Text';
-import AuthorCard from '~/components/home/AuthorCard';
-import LayoutWithTopNav from '~/components/layout/LayoutWithTopNav';
+import { Text } from '~/components/common/Text';
+import { AuthorCard } from '~/components/home/AuthorCard';
+import { LayoutWithTopNav } from '~/components/layout/LayoutWithTopNav';
 import { http } from '~/lib/http';
 
 export const revalidate = 604800;

@@ -9,7 +9,7 @@ import {
 import { PAGE_ROUTES } from '~/constants/route';
 import { stackServerApp } from '~/stack';
 
-export default async function ProfileHeader() {
+export async function ProfileHeader() {
   const user = await stackServerApp.getUser();
   const { signOut } = stackServerApp.urls;
   const userProfile = await getUserDetails(user?.id);

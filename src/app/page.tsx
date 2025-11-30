@@ -1,7 +1,7 @@
 import { Suspense } from 'react';
-import SearchInput from '~/components/common/SearchInput/SearchInput';
-import MainContent from '~/components/home/MainContent';
-import LayoutWithTopNav from '~/components/layout/LayoutWithTopNav';
+import { SearchInput } from '~/components/common/SearchInput/SearchInput';
+import { MainContent } from '~/components/home/MainContent';
+import { LayoutWithTopNav } from '~/components/layout/LayoutWithTopNav';
 import { Spinner } from '~/components/ui/spinner';
 
 export const revalidate = 604800;

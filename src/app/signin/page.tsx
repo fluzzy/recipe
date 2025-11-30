@@ -1,4 +1,4 @@
-import GoogleOnlyAuthCard from '~/components/auth/GoogleOnlyAuthCard';
+import { GoogleOnlyAuthCard } from '~/components/auth/GoogleOnlyAuthCard';
 
 export default function SignInPage() {
   return (

@@ -33,7 +33,7 @@ function getYouTubeEmbedUrl(url: string): string | null {
   }
 }
 
-export default function YouTubeEmbed({ url }: YouTubeEmbedProps) {
+export function YouTubeEmbed({ url }: YouTubeEmbedProps) {
   const embedUrl = getYouTubeEmbedUrl(url);
 
   if (!embedUrl) {

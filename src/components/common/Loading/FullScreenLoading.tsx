@@ -6,9 +6,9 @@ import {
   AlertDialogDescription,
 } from '~/components/ui/alert-dialog';
 import { Spinner } from '~/components/ui/spinner';
-import RevealText from '../RevealText/RevealText';
+import { RevealText } from '../RevealText/RevealText';
 
-export default function FullScreenLoading() {
+export function FullScreenLoading() {
   return (
     <AlertDialog open={true}>
       <AlertDialogContent className='border-0 bg-transparent'>

@@ -1,8 +1,8 @@
 import { Suspense } from 'react';
-import SearchInput from '~/components/common/SearchInput/SearchInput';
-import LayoutWithTopNav from '~/components/layout/LayoutWithTopNav';
-import SearchItems from '~/components/search/SearchItems';
-import SearchTabs from '~/components/search/SearchTabs';
+import { SearchInput } from '~/components/common/SearchInput/SearchInput';
+import { LayoutWithTopNav } from '~/components/layout/LayoutWithTopNav';
+import { SearchItems } from '~/components/search/SearchItems';
+import { SearchTabs } from '~/components/search/SearchTabs';
 import { Spinner } from '~/components/ui/spinner';
 import { SearchQueryKey, SearchTabKey } from '~/constants/key';
 

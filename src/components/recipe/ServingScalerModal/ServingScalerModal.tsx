@@ -24,7 +24,7 @@ type ServingScalerModalProps = {
   children: React.ReactNode;
 };
 
-export default function ServingScalerModal({
+export function ServingScalerModal({
   ingredients,
   children,
 }: ServingScalerModalProps) {

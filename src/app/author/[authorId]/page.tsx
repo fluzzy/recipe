@@ -1,7 +1,7 @@
 import { GetAuthorApi } from '~/app/api/author/[authorId]/route';
-import AuthorRecipeList from '~/components/author/AuthorRecipeList';
-import Text from '~/components/common/Text/Text';
-import LayoutWithTopNav from '~/components/layout/LayoutWithTopNav';
+import { AuthorRecipeList } from '~/components/author/AuthorRecipeList';
+import { Text } from '~/components/common/Text';
+import { LayoutWithTopNav } from '~/components/layout/LayoutWithTopNav';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import { Card, CardContent } from '~/components/ui/card';
 import { http } from '~/lib/http';

@@ -2,7 +2,7 @@
 
 import { useStackApp } from '@stackframe/stack';
 import { useState } from 'react';
-import FullScreenLoading from '~/components/common/Loading/FullScreenLoading';
+import { FullScreenLoading } from '~/components/common/Loading/FullScreenLoading';
 import { Button } from '~/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card';
 import { useToast } from '~/hooks/use-toast';
@@ -29,7 +29,7 @@ const copyMap: Record<
   },
 };
 
-function GoogleOnlyAuthCard({ mode }: GoogleOnlyAuthCardProps) {
+export function GoogleOnlyAuthCard({ mode }: GoogleOnlyAuthCardProps) {
   const { title, buttonLabel } = copyMap[mode];
   const stackApp = useStackApp();
   const [isPending, setIsPending] = useState(false);
@@ -74,5 +74,3 @@ function GoogleOnlyAuthCard({ mode }: GoogleOnlyAuthCardProps) {
     </>
   );
 }
-
-export default GoogleOnlyAuthCard;

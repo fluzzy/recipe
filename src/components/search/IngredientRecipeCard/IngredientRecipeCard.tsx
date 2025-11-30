@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { Ingredient as IngredientRecipe } from '~/app/api/search/route';
-import Text from '~/components/common/Text/Text';
+import { Text } from '~/components/common/Text';
 import { Card } from '~/components/ui/card';
 import { PAGE_ROUTES } from '~/constants/route';
 
@@ -49,9 +49,7 @@ interface IngredientRecipeCardProps {
   recipe: IngredientRecipe;
 }
 
-export default function IngredientRecipeCard({
-  recipe,
-}: IngredientRecipeCardProps) {
+export function IngredientRecipeCard({ recipe }: IngredientRecipeCardProps) {
   const { id, title, viewCount } = recipe;
   const ingredients = parseIngredients(recipe.ingredients);
 

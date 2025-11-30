@@ -1,16 +1,16 @@
 'use client';
 
-import { useRouter, useSearchParams } from 'next/navigation';
-import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Search } from 'lucide-react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useForm } from 'react-hook-form';
 import { Form, FormControl, FormField, FormItem } from '~/components/ui/form';
 import { Input } from '~/components/ui/input';
-import { searchSchema, SearchValue } from '~/utils/validation/search';
 import { SearchQueryKey } from '~/constants/key';
 import { PAGE_ROUTES } from '~/constants/route';
+import { searchSchema, SearchValue } from '~/utils/validation/search';
 
-export default function SearchInput() {
+export function SearchInput() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
