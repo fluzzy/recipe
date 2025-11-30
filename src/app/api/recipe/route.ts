@@ -1,7 +1,7 @@
 import { after, NextRequest, NextResponse } from 'next/server';
+import { requireAdmin } from '~/actions/auth-guards';
 import { STATUS_CODE } from '~/constants/api';
 import { RecipeQueryKey } from '~/constants/key';
-import { requireAdmin } from '~/lib/authz';
 import prisma from '~/lib/prisma';
 import { stringSchema } from '~/utils/validation/common';
 import {

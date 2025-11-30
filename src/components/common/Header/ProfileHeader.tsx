@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { getUserDetails } from '~/app/actions';
+import { getUserDetails } from '~/actions/user.actions';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import {
   Popover,

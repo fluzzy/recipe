@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
+import { requireAdmin, requireUser } from '~/actions/auth-guards';
 import { STATUS_CODE } from '~/constants/api';
-import { requireAdmin, requireUser } from '~/lib/authz';
 import prisma from '~/lib/prisma';
 import {
   uploadAuthorSchema,
