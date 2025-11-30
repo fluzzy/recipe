@@ -194,7 +194,7 @@ export default function UploadRecipePage() {
                       <FormControl>
                         <SelectForm
                           onChange={field.onChange}
-                          value={field.value}
+                          value={field.value ?? ''}
                           placeholder='Unit'
                         >
                           {UNITS.map((unit) => (
@@ -313,7 +313,7 @@ export default function UploadRecipePage() {
                 <FormLabel>recipe author</FormLabel>
                 <SelectForm
                   onChange={field.onChange}
-                  value={field.value}
+                  value={field.value ?? ''}
                   placeholder='Select Author'
                 >
                   {authors.map((author) => (
