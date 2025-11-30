@@ -1,14 +1,14 @@
 import Link from 'next/link';
-import { Fragment } from 'react';
 import { GetRecipeApi } from '~/app/api/recipe/route';
 import { RecipePageParams } from '~/app/recipe/[recipeId]/page';
 import Text from '~/components/common/Text/Text';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
+import { Button } from '~/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card';
-import { Separator } from '~/components/ui/separator';
 import { RecipeQueryKey } from '~/constants/key';
 import { PAGE_ROUTES } from '~/constants/route';
 import { http } from '~/lib/http';
+import ServingScalerModal from './ServingScalerModal';
 import Tip from './Tip';
 import YouTubeEmbed from './YouTubeEmbed';
 
@@ -99,24 +99,29 @@ export default async function RecipeDetail({ params }: RecipeDetailProps) {
 
         <section>
           <Card>
-            <CardHeader>
+            <CardHeader className='flex flex-row items-center justify-between space-y-0'>
               <CardTitle className='text-main'>Ingredients</CardTitle>
+              <ServingScalerModal ingredients={ingredients}>
+                <Button variant='outline' size='sm'>
+                  계량하기
+                </Button>
+              </ServingScalerModal>
             </CardHeader>
             <CardContent>
-              <ol>
+              <ol className='grid grid-cols-1 gap-2 md:grid-cols-2'>
                 {ingredients.map((ingredient, index) => (
-                  <Fragment key={index}>
-                    <li className='flex justify-between py-2'>
-                      <div>
-                        <Text>{ingredient.name}</Text>
-                      </div>
-                      <div className='flex'>
-                        <Text>{ingredient.amount}</Text>
-                        <Text>{ingredient.unit}</Text>
-                      </div>
-                    </li>
-                    <Separator />
-                  </Fragment>
+                  <li
+                    key={index}
+                    className='border-border/30 flex justify-between border-b py-1 last:border-b-0'
+                  >
+                    <div>
+                      <Text>{ingredient.name}</Text>
+                    </div>
+                    <div className='flex'>
+                      <Text>{ingredient.amount}</Text>
+                      <Text>{ingredient.unit}</Text>
+                    </div>
+                  </li>
                 ))}
               </ol>
             </CardContent>
