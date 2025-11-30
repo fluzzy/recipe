@@ -1,4 +1,5 @@
 import { Suspense } from 'react';
+import LayoutWithTopNav from '~/components/layout/LayoutWithTopNav';
 import RecipeDetail from '~/components/recipe/RecipeDetail';
 import { Spinner } from '~/components/ui/spinner';
 
@@ -10,8 +11,10 @@ export interface RecipePageParams {
 
 export default async function Recipe({ params }: RecipePageParams) {
   return (
-    <Suspense fallback={<Spinner />}>
-      <RecipeDetail params={params} />
-    </Suspense>
+    <LayoutWithTopNav>
+      <Suspense fallback={<Spinner />}>
+        <RecipeDetail params={params} />
+      </Suspense>
+    </LayoutWithTopNav>
   );
 }

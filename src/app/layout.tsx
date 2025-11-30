@@ -1,7 +1,6 @@
 import { StackProvider } from '@stackframe/stack';
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
-import ProfileHeader from '~/components/common/Header/ProfileHeader';
 import { ThemeProvider } from '~/components/theme/theme-provider';
 import { Toaster } from '~/components/ui/toaster';
 import { stackServerApp } from '~/stack';
@@ -41,7 +40,6 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             <div className='mx-auto h-full max-w-3xl bg-[#872cff03] px-4'>
-              <ProfileHeader />
               {children}
             </div>
             <Toaster />
