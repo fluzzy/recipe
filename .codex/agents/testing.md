@@ -11,6 +11,12 @@ language: ko
 이 문서는 **E2E/통합 테스트** 규칙을 정의한다.  
 Global 규칙(`AGENTS.md`)보다 **우선(precedence 120)** 적용된다.
 
+핵심 목표
+- 사람이 작성한 **TODO 시나리오 문서**(자연어)를 기반으로 안정적인 E2E 테스트를 만든다.
+- **Playwright Test Agents** (planner → generator → healer) 흐름을 활용해 **테스트 플랜 → 코드 → 실패 시 치유** 루프를 따른다.
+- 테스트는 항상 **사용자 여정(User journey)** 우선, 구현 디테일 의존 최소화.
+- 테스트 자동화 시 **앱 코드가 아니라 테스트 코드만** 수정한다.
+
 ---
 
 ## 📦 도구/버전
@@ -18,6 +24,41 @@ Global 규칙(`AGENTS.md`)보다 **우선(precedence 120)** 적용된다.
 - Node.js 20+ 권장(프로젝트는 Node 24에서 검증), TypeScript 5+
 - 브라우저: Chromium / WebKit (필수), Firefox(선택)
 - 기본 설정: `playwright.config.ts` (웹 서버 자동 기동: `yarn dev`)
+- Playwright Test Agents: planner / generator / healer 사용
+- MCP: `@playwright/mcp` (IDE/에이전트에서 브라우저 제어용)
+
+---
+
+## 📂 디렉터리/아티팩트 규칙
+- 사람이 작성하는 TODO 문서: `e2e/specs/{feature}/**.todo.md` (페이지/기능 단위, `[시나리오 N]` 단위 user journey)
+- planner가 작성하는 Markdown 플랜: `specs/{feature}.md` (TODO 문서 기반, steps + expected results 분리, `Origin: planner-suggested` 메모로 추가 시나리오 명시)
+- generator가 생성하는 테스트 코드: `e2e/tests/{feature}/**.spec.ts`
+- specs/tests는 동일한 폴더 구조를 유지한다.
+- 기존 Playwright 기본 `tests/` 디렉터리가 있으면 공존 가능, seed test(`tests/seed.spec.ts`)는 필수 입력으로 활용.
+
+---
+
+## 🤖 Agent 워크플로우
+### Planner
+- 입력: seed test(필수), TODO 문서/PRD/디자인(선택).
+- seed test 실행 후 앱을 실제 탐색, TODO 시나리오를 steps/expected로 구조화한 Markdown 플랜을 `specs/*.md`에 작성.
+- locator를 박지 말고 “무엇을 검증할지”만 기술. 테스트 코드는 생성하지 않는다.
+
+### Generator
+- 입력: planner 출력(`specs/*.md`), seed test, `playwright.config.ts`.
+- 출력: `e2e/tests/**.spec.ts` Playwright TS 코드.
+- 파일명: 기능+시나리오(`post-like-guest.spec.ts` 등), 테스트명은 TODO 시나리오 표현을 명확히 다듬어 사용.
+- 라우트 하드코딩 금지 → constants 사용, 없으면 오류 메시지 남기고 실행 중단. `use.baseURL` 활용.
+- 네비게이션 후 `waitForLoadState('networkidle')` 또는 주요 요소 가시성 확인. `waitForTimeout` 금지.
+- Locator 우선순위: `getByTestId` → `getByRole` → `getByLabel` → `getByText` → `locator`(최후). 다른 로케이터 사용 시 `// locator-justification` 주석.
+- Assertion: web-first `expect`, 동기 `expect`+`isVisible` 조합 금지. 중요/부수 결과는 hard/soft 적절히 구분.
+- 로그인/권한: 기존 fixture/helper(예: `auth.fixtures.ts`) 우선 재사용, 없으면 재사용성 있는 이름으로 작성.
+- 스크린샷/비디오/Trace: 실패 시 캡처(`screenshot/video/trace: retain-on-failure` 등) 설정 유지, Trace Viewer로 디버깅 안내.
+
+### Healer
+- 역할: 실패한 테스트를 재실행·분석 후 locator/타이밍/텍스트 등 테스트 코드만 수정해 치유.
+- 동작: 실패 식별 → 재실행 및 스냅샷/콘솔/네트워크 조사 → 패치 제안/적용 → 재실행 결과 보고.
+- 금지: 앱 구현 코드 수정, 의미 흐리는 느슨한 assertion, TODO/PRD 무시, 기능 깨졌는데 억지 통과시키기. 필요 시 `test.skip` 또는 TODO 메모 남김.
 
 ---
 
@@ -125,13 +166,16 @@ await page.getByRole('button', { name: '좋아요' }).click();
 ---
 
 ## 🧪 테스트 작성 규칙
-
-* **위치**: `e2e/specs/<기능>/<기능>.(auth|guest).spec.ts`
-* **독립성**: 상태 공유 금지, 생성/삭제는 API/시드 유틸 활용, 잔여 상태 제거
-* **동기화**: `waitForLoadState('networkidle')`, 웹-퍼스트 assertion 사용
-* **금지**: 무의미한 `waitForTimeout`, 하드코딩 URL/시크릿
-* **플레이크**: 원인 남기고 임시 격리(`test.fixme`), 7일 내 복구
-* **태깅**: 제목 접두어로 `[smoke]`, `[slow]` 등 태그를 붙여 선택 실행을 지원한다.
+- **위치**: `e2e/specs/<기능>/<기능>.(auth|guest|common).spec.ts`
+- **독립성**: 상태 공유 금지, 생성/삭제는 API/시드 유틸 활용, 잔여 상태 제거
+- **동기화**: `waitForLoadState('networkidle')`, 웹-퍼스트 assertion 사용
+- **금지**: 무의미한 `waitForTimeout`, 하드코딩 URL/시크릿
+- **플레이크**: 원인 남기고 임시 격리(`test.fixme`), 7일 내 복구
+- **태깅**: 제목 접두어로 `[smoke]`, `[slow]` 등 태그를 붙여 선택 실행을 지원한다.
+- **사용자 관점**: DOM 내부 구조/DB에 과도 의존 금지, 사용자 행동/결과 중심 검증.
+- **테스트 명/파일 명**: 무엇을 검증하는지 즉시 이해되게 작성.
+- **독립성 확보**: 각 테스트가 로그인/시드 등 필요한 상태를 자체 준비. 반복 작업은 fixture/hook으로 추상화.
+- **중복 허용**: 과도한 추상화로 가독성 해치지 말고, 필요 시 helper/fixture로 추상화.
 
 ---
 
@@ -144,6 +188,7 @@ await page.getByRole('button', { name: '좋아요' }).click();
 * [ ] 전제별 파일 접미사 적용(`.auth`, `.guest`)
 * [ ] 리포트/아티팩트 확인(trace/video/screenshot)
 * [ ] CI에서 안정성 확보(retries/worker/리포터 구성)
+* [ ] TODO 문서/PRD 요구사항을 충족했는지 검증 (없다면 보수적 TODO 주석으로 남김)
 
 ---
 
@@ -152,3 +197,4 @@ await page.getByRole('button', { name: '좋아요' }).click();
 * 기능 단위로 폴더를 구성하고 전제는 파일명 접미사로만 구분한다.
 * `getByTestId` 중심으로 작성하여 안정성을 확보한다.
 * 모든 테스트/리뷰/문서는 한글로 작성한다(코드 식별자는 영어 가능).
+* 모호하면 사용자에게 질문하거나, 테스트 파일 상단에 `// TODO:`로 가장 보수적 가정을 남긴다.
