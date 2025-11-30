@@ -1,7 +1,5 @@
-import { Fragment } from 'react';
 import { GetMainApi } from '~/app/api/main/route';
 import Text from '~/components/common/Text/Text';
-import { Separator } from '~/components/ui/separator';
 import { http } from '~/lib/http';
 import AuthorCard from './AuthorCard';
 import RecipeCard from './RecipeCard';
@@ -21,12 +19,9 @@ export default async function MainContent() {
         >
           Recipes
         </Text>
-        <div className='flex flex-col py-4'>
+        <div className='flex flex-col gap-3 py-4'>
           {data.recipes.map((recipe) => (
-            <Fragment key={recipe.id}>
-              <RecipeCard recipe={recipe} />
-              <Separator />
-            </Fragment>
+            <RecipeCard recipe={recipe} key={recipe.id} />
           ))}
         </div>
       </section>
@@ -41,7 +36,7 @@ export default async function MainContent() {
         >
           Authors
         </Text>
-        <div className='flex flex-col gap-4 py-4'>
+        <div className='grid grid-cols-1 gap-4 py-4 sm:auto-rows-fr sm:grid-cols-2'>
           {data.authors.map((author) => (
             <AuthorCard key={author.id} author={author} />
           ))}

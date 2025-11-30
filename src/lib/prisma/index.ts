@@ -3,7 +3,9 @@ export const recipeSelect = {
   title: true,
   thumbnailUrl: true,
   tags: true,
+  serving: true,
   viewCount: true,
+  tip: true,
   Author: {
     select: {
       name: true,
