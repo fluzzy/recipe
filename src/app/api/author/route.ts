@@ -1,11 +1,11 @@
 import { NextResponse } from 'next/server';
+import { STATUS_CODE } from '~/constants/api';
+import { requireAdmin, requireUser } from '~/lib/authz';
 import prisma from '~/lib/prisma';
-import { verifyAdmin, verifySession } from '~/lib/session';
 import {
   uploadAuthorSchema,
   UploadAuthorValue,
 } from '~/utils/validation/upload';
-import { STATUS_CODE } from '~/constants/api';
 import { ErrorResponse } from '../lib/common';
 
 type Author = {
@@ -22,7 +22,7 @@ export type GetAuthorApi = Array<Author>;
 
 export const GET = async () => {
   try {
-    await verifySession();
+    await requireUser();
     const authors = await prisma.author.findMany();
     return NextResponse.json(authors, {
       status: STATUS_CODE.SUCCESS,
@@ -43,7 +43,7 @@ export const POST = async (request: Request) => {
   }
 
   try {
-    await verifyAdmin();
+    await requireAdmin();
 
     await prisma.author.create({
       data: {

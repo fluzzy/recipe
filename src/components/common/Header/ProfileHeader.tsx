@@ -27,8 +27,13 @@ export default async function ProfileHeader() {
         <Popover>
           <PopoverTrigger>
             <Avatar>
-              <AvatarImage src='https://placehold.co/600x400' />
-              <AvatarFallback>CN</AvatarFallback>
+              <AvatarImage
+                src={
+                  userProfile?.raw_json.profile_image_url ||
+                  'https://placehold.co/600x400'
+                }
+              />
+              <AvatarFallback />
             </Avatar>
           </PopoverTrigger>
           <PopoverContent className='w-30'>

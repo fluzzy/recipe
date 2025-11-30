@@ -1,13 +1,13 @@
 import { after, NextRequest, NextResponse } from 'next/server';
+import { ERROR_MESSAGE, STATUS_CODE } from '~/constants/api';
+import { RecipeQueryKey } from '~/constants/key';
+import { requireAdmin } from '~/lib/authz';
 import prisma from '~/lib/prisma';
-import { verifyAdmin } from '~/lib/session';
 import { stringSchema } from '~/utils/validation/common';
 import {
   uploadRecipeSchema,
   UploadRecipeValue,
 } from '~/utils/validation/upload';
-import { ERROR_MESSAGE, STATUS_CODE } from '~/constants/api';
-import { RecipeQueryKey } from '~/constants/key';
 import { ErrorResponse } from '../lib/common';
 
 export type Recipe = {
@@ -93,13 +93,7 @@ export const POST = async (request: Request) => {
   }
 
   try {
-    const session = await verifyAdmin();
-    if (!session) {
-      return ErrorResponse(
-        ERROR_MESSAGE[STATUS_CODE.FORBIDDEN],
-        STATUS_CODE.FORBIDDEN,
-      );
-    }
+    const adminUser = await requireAdmin();
     await prisma.recipe.create({
       data: {
         title: parseData.data.title,
@@ -110,7 +104,7 @@ export const POST = async (request: Request) => {
         youtubeUrl: parseData.data.videoUrl,
         steps: parseData.data.steps.map((step) => step.description),
         authorID: parseData.data.recipeAuthor,
-        userId: session.user.user.id,
+        userId: adminUser.id,
         tip: parseData.data.tip,
       },
     });

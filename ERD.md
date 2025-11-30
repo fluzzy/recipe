@@ -6,69 +6,15 @@
 ## default
 ```mermaid
 erDiagram
-"User" {
+"users_sync" {
+  Json raw_json
   String id PK
   String name "nullable"
-  String email UK
-  DateTime emailVerified "nullable"
-  String image "nullable"
-  UserRole role "nullable"
-  String password "nullable"
-  DateTime createdAt
-  DateTime updatedAt
-}
-"Account" {
-  String userId FK
-  String type
-  String provider
-  String providerAccountId
-  String refresh_token "nullable"
-  String access_token "nullable"
-  Int expires_at "nullable"
-  String token_type "nullable"
-  String scope "nullable"
-  String id_token "nullable"
-  String session_state "nullable"
-  DateTime createdAt
-  DateTime updatedAt
-}
-"Session" {
-  String sessionToken UK
-  String userId FK
-  DateTime expires
-  DateTime createdAt
-  DateTime updatedAt
-}
-"VerificationToken" {
-  String identifier
-  String token
-  DateTime expires
-}
-"Authenticator" {
-  String credentialID UK
-  String userId FK
-  String providerAccountId
-  String credentialPublicKey
-  Int counter
-  String credentialDeviceType
-  Boolean credentialBackedUp
-  String transports "nullable"
-}
-"Recipe" {
-  String id PK
-  String title
-  String authorID FK
-  DateTime createdAt
-  DateTime updatedAt
-  String youtubeUrl "nullable"
-  Json ingredients
-  String steps
-  String tags
-  String thumbnailUrl "nullable"
-  Float serving
-  Int viewCount
-  String userId FK
-  String tip "nullable"
+  String email "nullable"
+  DateTime created_at "nullable"
+  DateTime updated_at "nullable"
+  DateTime deleted_at "nullable"
+  UserRole role
 }
 "Author" {
   String id PK
@@ -97,92 +43,41 @@ erDiagram
   DateTime createdAt
   DateTime updatedAt
 }
-"Account" }o--|| "User" : user
-"Session" }o--|| "User" : user
-"Authenticator" }o--|| "User" : user
-"Recipe" }o--|| "Author" : author
-"Recipe" }o--|| "User" : user
+"Recipe" {
+  String id PK
+  String title
+  String authorID FK
+  DateTime createdAt
+  DateTime updatedAt
+  String youtubeUrl "nullable"
+  Json ingredients
+  String steps
+  String tags
+  String thumbnailUrl "nullable"
+  Float serving
+  Int viewCount
+  String userId FK
+  String tip "nullable"
+}
 "Comment" }o--|| "Recipe" : recipe
-"Comment" }o--o| "User" : user
+"Comment" }o--o| "users_sync" : user
 "Like" }o--|| "Recipe" : recipe
-"Like" }o--|| "User" : user
+"Like" }o--|| "users_sync" : user
+"Recipe" }o--|| "Author" : author
+"Recipe" }o--|| "users_sync" : user
 ```
 
-### `User`
+### `users_sync`
 
 **Properties**
+  - `raw_json`: 
   - `id`: 
   - `name`: 
   - `email`: 
-  - `emailVerified`: 
-  - `image`: 
+  - `created_at`: 
+  - `updated_at`: 
+  - `deleted_at`: 
   - `role`: 
-  - `password`: 
-  - `createdAt`: 
-  - `updatedAt`: 
-
-### `Account`
-
-**Properties**
-  - `userId`: 
-  - `type`: 
-  - `provider`: 
-  - `providerAccountId`: 
-  - `refresh_token`: 
-  - `access_token`: 
-  - `expires_at`: 
-  - `token_type`: 
-  - `scope`: 
-  - `id_token`: 
-  - `session_state`: 
-  - `createdAt`: 
-  - `updatedAt`: 
-
-### `Session`
-
-**Properties**
-  - `sessionToken`: 
-  - `userId`: 
-  - `expires`: 
-  - `createdAt`: 
-  - `updatedAt`: 
-
-### `VerificationToken`
-
-**Properties**
-  - `identifier`: 
-  - `token`: 
-  - `expires`: 
-
-### `Authenticator`
-
-**Properties**
-  - `credentialID`: 
-  - `userId`: 
-  - `providerAccountId`: 
-  - `credentialPublicKey`: 
-  - `counter`: 
-  - `credentialDeviceType`: 
-  - `credentialBackedUp`: 
-  - `transports`: 
-
-### `Recipe`
-
-**Properties**
-  - `id`: 
-  - `title`: 
-  - `authorID`: 
-  - `createdAt`: 
-  - `updatedAt`: 
-  - `youtubeUrl`: 
-  - `ingredients`: 
-  - `steps`: 
-  - `tags`: 
-  - `thumbnailUrl`: 
-  - `serving`: 
-  - `viewCount`: 
-  - `userId`: 
-  - `tip`: 
 
 ### `Author`
 
@@ -216,3 +111,21 @@ erDiagram
   - `recipeId`: 
   - `createdAt`: 
   - `updatedAt`: 
+
+### `Recipe`
+
+**Properties**
+  - `id`: 
+  - `title`: 
+  - `authorID`: 
+  - `createdAt`: 
+  - `updatedAt`: 
+  - `youtubeUrl`: 
+  - `ingredients`: 
+  - `steps`: 
+  - `tags`: 
+  - `thumbnailUrl`: 
+  - `serving`: 
+  - `viewCount`: 
+  - `userId`: 
+  - `tip`: 
