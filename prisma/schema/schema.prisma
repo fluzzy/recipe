@@ -1,6 +1,6 @@
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["prismaSchemaFolder", "driverAdapters"]
+  previewFeatures = ["driverAdapters", "prismaSchemaFolder"]
 }
 
 generator markdown {
@@ -12,4 +12,5 @@ generator markdown {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  schemas  = ["neon_auth", "public"]
 }
