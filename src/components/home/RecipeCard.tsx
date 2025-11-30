@@ -1,7 +1,7 @@
 import Link from 'next/link';
+import { Recipe } from '~/app/api/main/route';
 import Text from '~/components/common/Text/Text';
 import { PAGE_ROUTES } from '~/constants/route';
-import { Recipe } from '~/app/api/main/route';
 
 interface RecipeCardProps {
   recipe: Recipe;

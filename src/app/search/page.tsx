@@ -1,7 +1,7 @@
 import { Suspense } from 'react';
+import SearchItems from '~/components/search/SearchItems';
 import { Spinner } from '~/components/ui/spinner';
 import { SearchQueryKey, SearchTabKey } from '~/constants/key';
-import SearchItems from './components/SearchItems';
 
 export type SearchParams = Promise<{
   [SearchQueryKey]: string;

@@ -1,8 +1,8 @@
 import { Fragment } from 'react';
-import { http } from '~/lib/http';
+import { GetMainApi } from '~/app/api/main/route';
 import Text from '~/components/common/Text/Text';
 import { Separator } from '~/components/ui/separator';
-import { GetMainApi } from '~/app/api/main/route';
+import { http } from '~/lib/http';
 import AuthorCard from './AuthorCard';
 import RecipeCard from './RecipeCard';
 

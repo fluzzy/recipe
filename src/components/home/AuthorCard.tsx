@@ -1,9 +1,9 @@
 import Link from 'next/link';
+import { Author } from '~/app/api/main/route';
 import Text from '~/components/common/Text/Text';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import { Card, CardContent } from '~/components/ui/card';
 import { PAGE_ROUTES } from '~/constants/route';
-import { Author } from '~/app/api/main/route';
 
 interface AuthorCardProps {
   author: Author;

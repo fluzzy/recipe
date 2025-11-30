@@ -1,10 +1,10 @@
-import { http } from '~/lib/http';
-import Text from '~/components/common/Text/Text';
-import { SearchQueryKey, SearchTabKey, SearchTabValue } from '~/constants/key';
 import { GetSearchApi } from '~/app/api/search/route';
-import AuthorCard from '~/app/src/components/AuthorCard';
-import RecipeCard from '~/app/src/components/RecipeCard';
-import { SearchParams } from '../page';
+import { SearchParams } from '~/app/search/page';
+import Text from '~/components/common/Text/Text';
+import AuthorCard from '~/components/home/AuthorCard';
+import RecipeCard from '~/components/home/RecipeCard';
+import { SearchQueryKey, SearchTabKey, SearchTabValue } from '~/constants/key';
+import { http } from '~/lib/http';
 
 export default async function SearchItems({
   searchParams,

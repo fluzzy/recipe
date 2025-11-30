@@ -1,13 +1,13 @@
 import Link from 'next/link';
 import { Fragment } from 'react';
-import { http } from '~/lib/http';
+import { GetRecipeApi } from '~/app/api/recipe/route';
 import Text from '~/components/common/Text/Text';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card';
 import { Separator } from '~/components/ui/separator';
 import { RecipeQueryKey } from '~/constants/key';
 import { PAGE_ROUTES } from '~/constants/route';
-import { GetRecipeApi } from '~/app/api/recipe/route';
+import { http } from '~/lib/http';
 import Tip from './Tip';
 
 interface RecipeDetailProps {
