@@ -34,7 +34,7 @@ export default async function MainContent() {
           fontColor={'foreground'}
           className='text-main'
         >
-          Authors
+          출처
         </Text>
         <div className='grid grid-cols-1 gap-4 py-4 sm:auto-rows-fr sm:grid-cols-2'>
           {data.authors.map((author) => (
