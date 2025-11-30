@@ -11,7 +11,8 @@ import { stackServerApp } from '~/stack';
 
 export default async function ProfileHeader() {
   const user = await stackServerApp.getUser();
-  const app = stackServerApp.urls;
+  console.log(user);
+  const { signOut } = stackServerApp.urls;
   const userProfile = await getUserDetails(user?.id);
 
   console.log(userProfile);
@@ -32,7 +33,7 @@ export default async function ProfileHeader() {
           </PopoverTrigger>
           <PopoverContent className='w-30'>
             <Link
-              href={app.signOut}
+              href={signOut}
               className='bg-gray-50 px-1 text-[11px] underline hover:no-underline'
             >
               Sign Out
@@ -42,13 +43,13 @@ export default async function ProfileHeader() {
       ) : (
         <div className='flex items-center gap-3'>
           <Link
-            href={app.signIn}
+            href={PAGE_ROUTES.SIGN_IN}
             className='inline-flex h-8 items-center justify-center rounded-md px-4 text-[13px] font-medium text-gray-700 transition-all hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-800'
           >
             Log In
           </Link>
           <Link
-            href={app.signUp}
+            href={PAGE_ROUTES.SIGN_UP}
             className='bg-primary-1 inline-flex h-8 items-center justify-center rounded-full px-6 text-center text-[13px] font-medium whitespace-nowrap text-black transition-colors duration-200 outline-none hover:bg-[#00e5bf] dark:text-black'
           >
             Sign Up
