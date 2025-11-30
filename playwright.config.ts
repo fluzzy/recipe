@@ -5,7 +5,7 @@ import { defineConfig, devices } from '@playwright/test';
 loadEnvConfig(process.cwd());
 
 export default defineConfig({
-  testDir: './e2e/specs',
+  testDir: './src/e2e/specs',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
@@ -47,7 +47,7 @@ export default defineConfig({
       ],
       use: {
         ...devices['Desktop Chrome'],
-        storageState: 'e2e/fixtures/auth/storage-state.json',
+        storageState: 'src/e2e/fixtures/auth/storage-state.json',
       },
     },
     {
@@ -58,7 +58,7 @@ export default defineConfig({
       ],
       use: {
         ...devices['Desktop Safari'],
-        storageState: 'e2e/fixtures/auth/storage-state.json',
+        storageState: 'src/e2e/fixtures/auth/storage-state.json',
       },
     },
 
@@ -90,7 +90,7 @@ export default defineConfig({
       ],
       use: {
         ...devices['Desktop Chrome'],
-        storageState: 'e2e/fixtures/auth/storage-state.json',
+        storageState: 'src/e2e/fixtures/auth/storage-state.json',
       },
     },
     {
@@ -101,7 +101,7 @@ export default defineConfig({
       ],
       use: {
         ...devices['Desktop Safari'],
-        storageState: 'e2e/fixtures/auth/storage-state.json',
+        storageState: 'src/e2e/fixtures/auth/storage-state.json',
       },
     },
   ],

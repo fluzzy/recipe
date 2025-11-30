@@ -5,7 +5,7 @@ generator client {
 
 generator markdown {
   provider = "prisma-markdown"
-  output   = "../../ERD.md"
+  output   = "../../../ERD.md"
   title    = "Recipe"
 }
 
