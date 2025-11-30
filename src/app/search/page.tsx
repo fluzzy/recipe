@@ -6,7 +6,7 @@ import { SearchTabs } from '~/components/search/SearchTabs';
 import { Spinner } from '~/components/ui/spinner';
 import { SearchQueryKey, SearchTabKey } from '~/constants/key';
 
-export const revalidate = 604800;
+export const dynamic = 'force-dynamic';
 
 export type SearchParams = Promise<{
   [SearchQueryKey]: string;

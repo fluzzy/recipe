@@ -3,7 +3,7 @@ import { LayoutWithTopNav } from '~/components/layout/LayoutWithTopNav';
 import { RecipeDetail } from '~/components/recipe/RecipeDetail';
 import { Spinner } from '~/components/ui/spinner';
 
-export const revalidate = 604800;
+export const dynamic = 'force-dynamic';
 
 export interface RecipePageParams {
   params: Promise<{ recipeId: string }>;

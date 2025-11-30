@@ -4,7 +4,7 @@ import { MainContent } from '~/components/home/MainContent';
 import { LayoutWithTopNav } from '~/components/layout/LayoutWithTopNav';
 import { Spinner } from '~/components/ui/spinner';
 
-export const revalidate = 604800;
+export const dynamic = 'force-dynamic';
 
 export default function Home() {
   return (

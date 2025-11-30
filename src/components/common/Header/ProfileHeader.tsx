@@ -50,12 +50,6 @@ export async function ProfileHeader() {
           >
             Log In
           </Link>
-          <Link
-            href={PAGE_ROUTES.SIGN_UP}
-            className='bg-primary-1 inline-flex h-8 items-center justify-center rounded-full px-6 text-center text-[13px] font-medium whitespace-nowrap text-black transition-colors duration-200 outline-none hover:bg-[#00e5bf] dark:text-black'
-          >
-            Sign Up
-          </Link>
         </div>
       )}
     </header>

@@ -4,7 +4,7 @@ import { AuthorCard } from '~/components/home/AuthorCard';
 import { LayoutWithTopNav } from '~/components/layout/LayoutWithTopNav';
 import { http } from '~/lib/http';
 
-export const revalidate = 604800;
+export const dynamic = 'force-dynamic';
 
 export default async function AuthorsPage() {
   const authors = await http<GetAuthorApi>('/api/author');
