@@ -10,6 +10,3 @@ export const SearchTabValue = {
 export type SearchTabValue = valueOf<typeof SearchTabValue>;
 
 export const RecipeQueryKey = 'recipeId';
-
-export const AuthSessionKey = 'auth_session';
-export const EntryUserKey = 'entry_user';
