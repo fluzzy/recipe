@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Fragment } from 'react';
 import { GetRecipeApi } from '~/app/api/recipe/route';
+import { RecipePageParams } from '~/app/recipe/[recipeId]/page';
 import Text from '~/components/common/Text/Text';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card';
@@ -11,9 +12,7 @@ import { http } from '~/lib/http';
 import Tip from './Tip';
 import YouTubeEmbed from './YouTubeEmbed';
 
-interface RecipeDetailProps {
-  params: Promise<{ recipeId: string }>;
-}
+type RecipeDetailProps = RecipePageParams;
 
 export default async function RecipeDetail({ params }: RecipeDetailProps) {
   const id = (await params).recipeId;

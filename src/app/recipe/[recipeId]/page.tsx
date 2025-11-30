@@ -4,11 +4,11 @@ import { Spinner } from '~/components/ui/spinner';
 
 export const revalidate = 604800;
 
-export default async function Recipe({
-  params,
-}: {
+export interface RecipePageParams {
   params: Promise<{ recipeId: string }>;
-}) {
+}
+
+export default async function Recipe({ params }: RecipePageParams) {
   return (
     <Suspense fallback={<Spinner />}>
       <RecipeDetail params={params} />
