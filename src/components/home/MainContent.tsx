@@ -47,14 +47,6 @@ export default async function MainContent() {
           >
             출처
           </Text>
-          <Text
-            as={'span'}
-            size={'body'}
-            fontColor={'muted'}
-            className='text-sm'
-          >
-            {data.authors.length}개
-          </Text>
         </div>
         <div className='grid grid-cols-1 gap-4 py-4 sm:auto-rows-fr sm:grid-cols-2'>
           {data.authors.map((author) => (

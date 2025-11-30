@@ -1,4 +1,3 @@
-import { notFound } from 'next/navigation';
 import { GetAuthorApi } from '~/app/api/author/[authorId]/route';
 import AuthorRecipeList from '~/components/author/AuthorRecipeList';
 import Text from '~/components/common/Text/Text';
@@ -17,13 +16,7 @@ interface AuthorPageProps {
 
 export default async function AuthorPage({ params }: AuthorPageProps) {
   const { authorId } = await params;
-
-  let author: GetAuthorApi;
-  try {
-    author = await http<GetAuthorApi>(`/api/author/${authorId}`);
-  } catch {
-    notFound();
-  }
+  const author = await http<GetAuthorApi>(`/api/author/${authorId}`);
 
   const {
     name,

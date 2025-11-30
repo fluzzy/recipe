@@ -1,8 +1,8 @@
 import { GetSearchApi } from '~/app/api/search/route';
 import { SearchParams } from '~/app/search/page';
-import Text from '~/components/common/Text/Text';
 import AuthorCard from '~/components/home/AuthorCard';
 import RecipeCard from '~/components/home/RecipeCard';
+import IngredientRecipeCard from '~/components/search/IngredientRecipeCard';
 import { SearchQueryKey, SearchTabKey, SearchTabValue } from '~/constants/key';
 import { http } from '~/lib/http';
 
@@ -38,34 +38,21 @@ export default async function SearchItems({
 
   if (data.type === SearchTabValue.AUTHOR) {
     return (
-      <>
+      <div className='flex flex-col gap-2'>
         {data.data.map((author) => (
           <AuthorCard key={author.id} author={author} />
         ))}
-      </>
+      </div>
     );
   }
 
   if (data.type === SearchTabValue.INGREDIENT) {
     return (
-      <>
+      <div className='grid gap-3'>
         {data.data.map((recipe) => (
-          <div key={recipe.id}>
-            <div>
-              <Text size={'large'}>{recipe.title}</Text>
-            </div>
-            <div className='flex gap-2'>
-              {Array.isArray(recipe.ingredients) &&
-                recipe.ingredients.map((el, index) => (
-                  <Text key={index} size={'caption'}>
-                    {/* @ts-ignore */}
-                    {el.name}
-                  </Text>
-                ))}
-            </div>
-          </div>
+          <IngredientRecipeCard key={recipe.id} recipe={recipe} />
         ))}
-      </>
+      </div>
     );
   }
 
