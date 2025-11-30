@@ -102,7 +102,7 @@ export default async function RecipeDetail({ params }: RecipeDetailProps) {
             <CardHeader className='flex flex-row items-center justify-between space-y-0'>
               <CardTitle className='text-main'>Ingredients</CardTitle>
               <ServingScalerModal ingredients={ingredients}>
-                <Button variant='outline' size='sm'>
+                <Button variant='outline' size='sm' className='cursor-pointer'>
                   계량하기
                 </Button>
               </ServingScalerModal>
@@ -140,9 +140,9 @@ export default async function RecipeDetail({ params }: RecipeDetailProps) {
               <CardTitle className='text-main'>Steps</CardTitle>
             </CardHeader>
             <CardContent>
-              <ul>
+              <ul className='flex flex-col gap-2'>
                 {steps?.map((step, index) => (
-                  <li key={index} className='py-2'>
+                  <li key={index}>
                     {index + 1}. {step}
                   </li>
                 ))}
