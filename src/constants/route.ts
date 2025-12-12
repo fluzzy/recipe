@@ -8,3 +8,19 @@ export const PAGE_ROUTES = {
   RECIPE: '/recipe',
   AUTHOR: '/author',
 } as const;
+
+type Locale = 'kr' | 'en';
+
+/**
+ * locale을 고려한 경로를 생성합니다.
+ * kr은 기본 경로(/), en은 /en/ 경로를 반환합니다.
+ */
+export function getLocalizedRoute(
+  route: string,
+  locale: Locale = 'kr',
+): string {
+  if (locale === 'kr') {
+    return route;
+  }
+  return `/en${route === '/' ? '' : route}`;
+}

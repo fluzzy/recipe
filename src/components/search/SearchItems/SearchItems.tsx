@@ -1,5 +1,5 @@
+import { SearchParams } from '~/app/[lang]/search/page';
 import { GetSearchApi } from '~/app/api/search/route';
-import { SearchParams } from '~/app/search/page';
 import { AuthorCard } from '~/components/home/AuthorCard';
 import { RecipeCard } from '~/components/home/RecipeCard';
 import { IngredientRecipeCard } from '~/components/search/IngredientRecipeCard';

@@ -1,6 +1,6 @@
 import Link from 'next/link';
+import { RecipePageParams } from '~/app/[lang]/recipe/[recipeId]/page';
 import { GetRecipeApi } from '~/app/api/recipe/route';
-import { RecipePageParams } from '~/app/recipe/[recipeId]/page';
 import { Text } from '~/components/common/Text';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import { Button } from '~/components/ui/button';

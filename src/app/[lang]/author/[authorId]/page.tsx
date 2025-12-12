@@ -10,6 +10,7 @@ export const revalidate = 604800;
 
 interface AuthorPageProps {
   params: Promise<{
+    lang: string;
     authorId: string;
   }>;
 }

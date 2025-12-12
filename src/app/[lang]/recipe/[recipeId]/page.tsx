@@ -6,7 +6,7 @@ import { Spinner } from '~/components/ui/spinner';
 export const revalidate = 604800;
 
 export interface RecipePageParams {
-  params: Promise<{ recipeId: string }>;
+  params: Promise<{ lang: string; recipeId: string }>;
 }
 
 export default async function Recipe({ params }: RecipePageParams) {

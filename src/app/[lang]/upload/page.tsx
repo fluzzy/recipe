@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Plus, X } from 'lucide-react';
 import { Fragment, useEffect, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
+import { GetAuthorApi } from '~/app/api/author/route';
 import { FullScreenLoading } from '~/components/common/Loading/FullScreenLoading';
 import { SelectForm } from '~/components/common/SelectForm/SelectForm';
 import { Button } from '~/components/ui/button';
@@ -26,7 +27,6 @@ import {
   uploadRecipeSchema,
   UploadRecipeValue,
 } from '~/utils/validation/upload';
-import { GetAuthorApi } from '../api/author/route';
 
 export default function UploadRecipePage() {
   const { toast } = useToast();
@@ -316,7 +316,7 @@ export default function UploadRecipePage() {
                   value={field.value ?? ''}
                   placeholder='Select Author'
                 >
-                  {authors.map((author) => (
+                  {authors.map((author: GetAuthorApi[number]) => (
                     <SelectItem key={author.id} value={author.id}>
                       {author.name}
                     </SelectItem>
