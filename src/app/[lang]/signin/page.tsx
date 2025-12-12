@@ -1,11 +1,17 @@
-import { GoogleOnlyAuthCard } from '~/components/auth/GoogleOnlyAuthCard';
+'use client';
+
+import { OAuthButton } from '@stackframe/stack';
+import { Card, CardContent } from '~/components/ui/card';
 
 export default function SignInPage() {
   return (
-    <section className='flex min-h-[60vh] items-center justify-center px-4 py-10'>
-      <div className='w-full max-w-md'>
-        <GoogleOnlyAuthCard mode='sign-in' />
-      </div>
-    </section>
+    <div className='flex min-h-[60vh] items-center justify-center px-4'>
+      <Card className='flex w-full max-w-md flex-col items-center justify-center gap-6 p-6'>
+        <CardContent className='flex flex-col items-center gap-6 pt-6'>
+          <h1 className='text-xl font-semibold'>Google 계정으로 로그인</h1>
+          <OAuthButton provider='google' type='sign-in' />
+        </CardContent>
+      </Card>
+    </div>
   );
 }
