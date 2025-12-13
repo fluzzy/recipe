@@ -1,0 +1,25 @@
+{
+  "home": {
+    "title": "Home",
+    "recipesHeading": "Recipes",
+    "recipesTotal": "Total {count, number}",
+    "authorsHeading": "Sources"
+  },
+  "recipeCard": {
+    "views": "{count, number} views",
+    "likes": "{count, number} likes"
+  },
+  "search": {
+    "title": "Search",
+    "inputPlaceholder": "Search by ingredient or recipe name",
+    "tabTitle": "Title",
+    "tabIngredient": "Ingredient",
+    "tabAuthor": "Source",
+    "emptyQuery": "Please enter a search term.",
+    "emptyResult": "No results found.",
+    "emptyData": "No data available."
+  },
+  "handler": {
+    "loading": "Loading authentication page..."
+  }
+}

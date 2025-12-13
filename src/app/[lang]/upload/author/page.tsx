@@ -47,10 +47,14 @@ export default function UploadAuthorPage() {
           description: 'upload successful',
         });
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : '업로드 중 오류가 발생했습니다.';
       toast({
         variant: 'destructive',
-        description: error.message,
+        description: message,
       });
     } finally {
       setIsPending(false);

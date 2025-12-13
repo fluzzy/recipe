@@ -1,36 +1,13 @@
-import { NextRequest, NextResponse } from 'next/server';
+import createMiddleware from 'next-intl/middleware';
+import { routing } from './i18n/routing';
 
-export function proxy(request: NextRequest) {
-  const { pathname } = request.nextUrl;
-
-  if (
-    pathname.startsWith('/api') ||
-    pathname.startsWith('/_next') ||
-    pathname.startsWith('/_vercel') ||
-    pathname.includes('.') ||
-    pathname.startsWith('/handler')
-  ) {
-    return NextResponse.next();
-  }
-
-  if (pathname.startsWith('/en/') || pathname === '/en') {
-    return NextResponse.next();
-  }
-
-  if (pathname.startsWith('/kr/') || pathname === '/kr') {
-    const newPath = pathname.replace(/^\/kr/, '') || '/';
-    const url = request.nextUrl.clone();
-    url.pathname = newPath;
-    return NextResponse.redirect(url);
-  }
-
-  const url = request.nextUrl.clone();
-  url.pathname = `/kr${pathname === '/' ? '' : pathname}`;
-  return NextResponse.rewrite(url);
-}
+// Next.js 16: proxy.ts에서 프록시 함수를 export 한다.
+export const proxy = createMiddleware(routing);
 
 export const config = {
-  matcher: [
-    '/((?!api|_next/static|_next/image|favicon.ico|handler|.*\\..*).*)',
-  ],
+  // Match all pathnames except for
+  // - … if they start with `/api`, `/_next` or `/_vercel`
+  // - … the ones containing a dot (e.g. `favicon.ico`)
+  // - … the ones starting with `/handler` (Stack Auth routes)
+  matcher: ['/((?!api|_next|_vercel|handler|.*\\..*).*)'],
 };

@@ -1,19 +1,17 @@
 import { Suspense } from 'react';
 import { LayoutWithTopNav } from '~/components/layout/LayoutWithTopNav';
-import { RecipeDetail } from '~/components/recipe/RecipeDetail';
+import { 레시피_상세 } from '~/components/recipe/레시피_상세';
 import { Spinner } from '~/components/ui/spinner';
 
 export const revalidate = 604800;
 
-export interface RecipePageParams {
-  params: Promise<{ lang: string; recipeId: string }>;
-}
+export type RecipePageParams = Promise<{ lang: string; recipeId: string }>;
 
-export default async function Recipe({ params }: RecipePageParams) {
+export default async function Recipe({ params }: { params: RecipePageParams }) {
   return (
     <LayoutWithTopNav>
       <Suspense fallback={<Spinner />}>
-        <RecipeDetail params={params} />
+        <레시피_상세 params={params} />
       </Suspense>
     </LayoutWithTopNav>
   );

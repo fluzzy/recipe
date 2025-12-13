@@ -1,6 +1,6 @@
 'use client';
 
-import { usePathname, useRouter } from 'next/navigation';
+import { useLocale } from 'next-intl';
 import {
   Select,
   SelectContent,
@@ -8,35 +8,28 @@ import {
   SelectTrigger,
   SelectValue,
 } from '~/components/ui/select';
+import { usePathname, useRouter } from '~/i18n/navigation';
 
 const locales = [
   { label: 'English', value: 'en' },
   { label: '한국어', value: 'kr' },
-];
+  // TS가 locale 값을 정확히 추론하도록 상수 단언
+] as const;
+
+type LocaleOption = (typeof locales)[number]['value'];
 
 export function LanguageSwitcher() {
   const router = useRouter();
-  const pathname = usePathname() || '/';
+  const pathname = usePathname();
+  const currentLocale = useLocale() as LocaleOption;
 
-  const segments = pathname.split('/').filter(Boolean);
-  const currentLocale = segments[0] === 'en' ? 'en' : 'kr';
-  const pathWithoutLocale =
-    `/${(currentLocale === 'en' ? segments.slice(1) : segments).join('/')}` ||
-    '/';
-
-  const handleChange = (nextLocale: string) => {
+  const handleChange = (nextLocale: LocaleOption) => {
     if (nextLocale === currentLocale) {
       return;
     }
 
-    const nextPath =
-      nextLocale === 'en'
-        ? `/en${pathWithoutLocale === '/' ? '' : pathWithoutLocale}`
-        : pathWithoutLocale === '/' || pathWithoutLocale === ''
-          ? '/'
-          : pathWithoutLocale;
-
-    router.push(nextPath);
+    // 현재 internal pathname을 기준으로 locale을 교체
+    router.replace(pathname, { locale: nextLocale });
   };
 
   return (

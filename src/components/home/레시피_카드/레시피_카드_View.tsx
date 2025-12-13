@@ -1,21 +1,34 @@
 import { Eye, Heart } from 'lucide-react';
-import Link from 'next/link';
 import { Recipe } from '~/app/api/main/route';
 import { Card } from '~/components/ui/card';
 import { PAGE_ROUTES } from '~/constants/route';
+import { Link } from '~/i18n/navigation';
+import type { Locale } from '~/i18n/routing';
 
-interface RecipeCardProps {
+type RecipeCardViewProps = {
   recipe: Recipe;
-}
+  locale: Locale;
+  viewsText: string;
+  likesText: string;
+};
 
-export function RecipeCard({ recipe }: RecipeCardProps) {
-  const { id, title, tags, Author: author, viewCount, _count } = recipe;
+export function 레시피_카드_View({
+  recipe,
+  locale,
+  viewsText,
+  likesText,
+}: RecipeCardViewProps) {
+  const { id, title, tags, Author: author } = recipe;
 
   return (
     <Link
       href={`${PAGE_ROUTES.RECIPE}/${id}`}
       className='focus-visible:ring-ring block focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none'
-      aria-label={`${title} 레시피 상세 보기`}
+      aria-label={
+        locale === 'en'
+          ? `${title} recipe details`
+          : `${title} 레시피 상세 보기`
+      }
       data-testid={`link-recipe-${id}`}
     >
       <Card className='border-card-border bg-card text-card-foreground hover-elevate rounded-xl border shadow-sm transition-shadow hover:shadow-md'>
@@ -45,14 +58,14 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
               data-testid={`text-views-${id}`}
             >
               <Eye className='h-3.5 w-3.5' aria-hidden='true' />
-              {viewCount.toLocaleString()} 조회
+              {viewsText}
             </span>
             <span
               className='flex items-center gap-1'
               data-testid={`text-likes-${id}`}
             >
               <Heart className='h-3.5 w-3.5' aria-hidden='true' />
-              좋아요 {_count.likes.toLocaleString()}
+              {likesText}
             </span>
             <span
               className='text-muted-foreground'

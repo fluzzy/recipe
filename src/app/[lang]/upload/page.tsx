@@ -73,15 +73,19 @@ export default function UploadRecipePage() {
       try {
         const authors = await http<GetAuthorApi>('/api/author');
         setAuthors(authors);
-      } catch (error: any) {
+      } catch (error: unknown) {
+        const message =
+          error instanceof Error
+            ? error.message
+            : '작가 목록을 불러오지 못했습니다.';
         toast({
           variant: 'destructive',
-          description: error.message,
+          description: message,
         });
       }
     };
     fetchAuthors();
-  }, []);
+  }, [toast]);
 
   const onSubmit = async (values: UploadRecipeValue) => {
     try {
@@ -96,10 +100,14 @@ export default function UploadRecipePage() {
         });
         form.reset();
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : '업로드 중 오류가 발생했습니다.';
       toast({
         variant: 'destructive',
-        description: error.message,
+        description: message,
       });
     } finally {
       setIsPending(false);

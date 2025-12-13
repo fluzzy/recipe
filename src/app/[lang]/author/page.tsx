@@ -1,6 +1,6 @@
 import { GetAuthorApi } from '~/app/api/author/route';
 import { Text } from '~/components/common/Text';
-import { AuthorCard } from '~/components/home/AuthorCard';
+import { 출처_카드 } from '~/components/home/출처_카드';
 import { LayoutWithTopNav } from '~/components/layout/LayoutWithTopNav';
 import { http } from '~/lib/http';
 
@@ -32,7 +32,7 @@ export default async function AuthorsPage() {
           </Text>
           <div className='grid grid-cols-1 gap-4 sm:auto-rows-fr sm:grid-cols-2 lg:grid-cols-3'>
             {authors.map((author) => (
-              <AuthorCard key={author.id} author={author} />
+              <출처_카드 key={author.id} author={author} />
             ))}
           </div>
         </section>

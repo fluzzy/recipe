@@ -1,17 +1,18 @@
 'use client';
 
+/* eslint-disable react-hooks/rules-of-hooks */
 import { useEffect, useRef, useState } from 'react';
 import { GetAuthorRecipesApi } from '~/app/api/author/[authorId]/recipes/route';
 import { Text } from '~/components/common/Text';
-import { RecipeCard } from '~/components/home/RecipeCard';
+import { 레시피_카드_Client } from '~/components/home/레시피_카드';
 import { useToast } from '~/hooks/use-toast';
 import { http } from '~/lib/http';
 
-interface AuthorRecipeListProps {
+interface 출처_리스트Props {
   authorId: string;
 }
 
-export function AuthorRecipeList({ authorId }: AuthorRecipeListProps) {
+export function 출처_리스트({ authorId }: 출처_리스트Props) {
   const [recipes, setRecipes] = useState<GetAuthorRecipesApi['recipes']>([]);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(true);
@@ -98,7 +99,7 @@ export function AuthorRecipeList({ authorId }: AuthorRecipeListProps) {
   return (
     <div className='flex flex-col gap-3'>
       {recipes.map((recipe) => (
-        <RecipeCard key={recipe.id} recipe={recipe} />
+        <레시피_카드_Client key={recipe.id} recipe={recipe} />
       ))}
 
       <div ref={observerRef} className='h-10'>

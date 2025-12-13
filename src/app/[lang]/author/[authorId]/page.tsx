@@ -1,5 +1,5 @@
 import { GetAuthorApi } from '~/app/api/author/[authorId]/route';
-import { AuthorRecipeList } from '~/components/author/AuthorRecipeList';
+import { 출처_리스트 } from '~/components/author/출처_리스트';
 import { Text } from '~/components/common/Text';
 import { LayoutWithTopNav } from '~/components/layout/LayoutWithTopNav';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
@@ -8,14 +8,15 @@ import { http } from '~/lib/http';
 
 export const revalidate = 604800;
 
-interface AuthorPageProps {
-  params: Promise<{
-    lang: string;
-    authorId: string;
-  }>;
-}
+export type AuthorPageParams = Promise<{
+  authorId: string;
+}>;
 
-export default async function AuthorPage({ params }: AuthorPageProps) {
+export default async function AuthorPage({
+  params,
+}: {
+  params: AuthorPageParams;
+}) {
   const { authorId } = await params;
   const author = await http<GetAuthorApi>(`/api/author/${authorId}`);
 
@@ -64,7 +65,7 @@ export default async function AuthorPage({ params }: AuthorPageProps) {
           >
             레시피
           </Text>
-          <AuthorRecipeList authorId={authorId} />
+          <출처_리스트 authorId={authorId} />
         </section>
       </main>
     </LayoutWithTopNav>
