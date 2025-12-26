@@ -1,0 +1,10 @@
+generator client {
+  provider = "prisma-client"
+  output   = "./generated/client"
+  previewFeatures = []
+}
+
+datasource db {
+  provider = "postgresql"
+  schemas  = ["neon_auth", "public"]
+}

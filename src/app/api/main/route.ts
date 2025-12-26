@@ -1,5 +1,5 @@
-import { Prisma } from '@prisma/client';
 import { NextResponse } from 'next/server';
+import { Prisma } from '~/generated/prisma';
 import prisma from '~/lib/prisma';
 import { authorInclude, recipeSelect } from '~/lib/prisma/index';
 import { ErrorResponse } from '../lib/common';
