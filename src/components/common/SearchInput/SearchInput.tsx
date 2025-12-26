@@ -3,6 +3,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Search } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { useForm } from 'react-hook-form';
 import { Form, FormControl, FormField, FormItem } from '~/components/ui/form';
 import { Input } from '~/components/ui/input';
@@ -11,6 +12,7 @@ import { PAGE_ROUTES } from '~/constants/route';
 import { searchSchema, SearchValue } from '~/utils/validation/search';
 
 export function SearchInput() {
+  const t = useTranslations('search');
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -41,7 +43,7 @@ export function SearchInput() {
               <FormControl>
                 <Input
                   className='h-12 pl-8'
-                  placeholder='Search by ingredient or recipe name'
+                  placeholder={t('inputPlaceholder')}
                   data-testid='search-input'
                   {...field}
                 />

@@ -1,7 +1,7 @@
 'use server';
 
-import type { UserRole } from '@prisma/client';
 import { ERROR_MESSAGE, STATUS_CODE } from '~/constants/api';
+import type { UserRole } from '~/generated/prisma';
 import { stackServerApp } from '~/stack';
 import { USER_ROLE } from '~/types/auth';
 import { CustomError } from '../lib/error';

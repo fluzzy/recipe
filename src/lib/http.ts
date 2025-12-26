@@ -12,12 +12,20 @@ export const http = async <T>(
   });
 
   if (!response.ok) {
-    const errorMessage = await response.json().catch(() => null);
-    const error = new Error();
-    (error as any).status = response.status;
-    (error as any).message = errorMessage;
+    const errorBody = await response.json().catch(() => null);
+    const message =
+      typeof errorBody === 'string'
+        ? errorBody
+        : (errorBody && (errorBody.message as string)) || 'Request failed';
 
+    const error = new Error(message) as Error & {
+      status?: number;
+      data?: unknown;
+    };
+    error.status = response.status;
+    error.data = errorBody;
     throw error;
   }
+
   return response.json() as Promise<T>;
 };

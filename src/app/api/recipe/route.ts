@@ -77,8 +77,13 @@ export const GET = async (request: NextRequest) => {
     });
 
     return NextResponse.json(response);
-  } catch (error: any) {
-    return ErrorResponse(error.message, error.status);
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    const status =
+      typeof error === 'object' && error !== null && 'status' in error
+        ? (error as { status?: number }).status
+        : undefined;
+    return ErrorResponse(message, status);
   }
 };
 
@@ -114,7 +119,12 @@ export const POST = async (request: Request) => {
         status: STATUS_CODE.CREATED,
       },
     );
-  } catch (error: any) {
-    return ErrorResponse(error.message, error.status);
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    const status =
+      typeof error === 'object' && error !== null && 'status' in error
+        ? (error as { status?: number }).status
+        : undefined;
+    return ErrorResponse(message, status);
   }
 };

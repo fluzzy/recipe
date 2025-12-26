@@ -1,7 +1,8 @@
+import { getTranslations } from 'next-intl/server';
+import { SearchParams } from '~/app/[lang]/search/page';
 import { GetSearchApi } from '~/app/api/search/route';
-import { SearchParams } from '~/app/search/page';
-import { AuthorCard } from '~/components/home/AuthorCard';
-import { RecipeCard } from '~/components/home/RecipeCard';
+import { 레시피_카드_Server } from '~/components/home/레시피_카드';
+import { 출처_카드 } from '~/components/home/출처_카드';
 import { IngredientRecipeCard } from '~/components/search/IngredientRecipeCard';
 import { SearchQueryKey, SearchTabKey, SearchTabValue } from '~/constants/key';
 import { http } from '~/lib/http';
@@ -11,11 +12,12 @@ export async function SearchItems({
 }: {
   searchParams: SearchParams;
 }) {
+  const t = await getTranslations('search');
   const query = (await searchParams)[SearchQueryKey];
   const tab = (await searchParams)[SearchTabKey] ?? SearchTabValue.TITLE;
 
   if (!query) {
-    return <div>검색어가 없습니다.</div>;
+    return <div>{t('emptyQuery')}</div>;
   }
 
   const data = await http<GetSearchApi>(
@@ -23,14 +25,14 @@ export async function SearchItems({
   );
 
   if (data.data.length === 0) {
-    return <div>검색 결과가 없습니다.</div>;
+    return <div>{t('emptyResult')}</div>;
   }
 
   if (data.type === SearchTabValue.TITLE) {
     return (
       <>
         {data.data.map((recipe) => (
-          <RecipeCard recipe={recipe} key={recipe.id} />
+          <레시피_카드_Server recipe={recipe} key={recipe.id} />
         ))}
       </>
     );
@@ -40,7 +42,7 @@ export async function SearchItems({
     return (
       <div className='flex flex-col gap-2'>
         {data.data.map((author) => (
-          <AuthorCard key={author.id} author={author} />
+          <출처_카드 key={author.id} author={author} />
         ))}
       </div>
     );
@@ -58,7 +60,7 @@ export async function SearchItems({
 
   return (
     <div>
-      <div>데이터가 없습니다.</div>
+      <div>{t('emptyData')}</div>
     </div>
   );
 }

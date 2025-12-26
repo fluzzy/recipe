@@ -1,7 +1,7 @@
-import { Prisma } from '@prisma/client';
 import { NextResponse } from 'next/server';
 import { requireAdmin } from '~/actions/auth-guards';
 import { STATUS_CODE } from '~/constants/api';
+import { Prisma } from '~/generated/prisma';
 import prisma from '~/lib/prisma';
 import { authorInclude } from '~/lib/prisma/index';
 import {
