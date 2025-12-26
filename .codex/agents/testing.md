@@ -1,209 +1,774 @@
-# 에이전트 테스팅 규칙 (Playwright)
+# AGENTS – E2E Testing with Playwright
+
+이 문서는 **Next.js(App Router)** 기반 웹 애플리케이션에서  
+**Playwright Test + Playwright Test Agents (planner / generator / healer)** 를 사용할 때  
+AI 에이전트가 따라야 할 **E2E 테스트 작성 규칙**을 정의합니다.
+
+핵심 목표:
+
+1. 사람이 작성한 **TODO 시나리오 문서**(자연어)를 기반으로 안정적인 E2E 테스트를 만듭니다.
+2. **Playwright Test Agents** 의 표준 흐름
+   - planner → generator → healer 를 활용해  
+     **테스트 플랜 → 테스트 코드 → 실패 시 치유** 루프를 최대한 활용합니다.
+3. 테스트는 항상 **사용자 관점(User journey)** 을 우선합니다.  
+   구현 디테일(내부 함수, DB 구조 등)에 불필요하게 의존하지 않습니다.
 
 ---
 
-agent_spec: v1  
-doc: testing  
-scope: repo  
-precedence: 120  
-language: ko
+## 1. 기본 환경 & 디렉터리 규칙
 
----
+### 1.1 Tech Stack
 
-이 문서는 **E2E/통합 테스트** 규칙을 정의한다.  
-Global 규칙(`AGENTS.md`)보다 **우선(precedence 120)** 적용된다.
-
-핵심 목표
-
-- 사람이 작성한 **TODO 시나리오 문서**(자연어)를 기반으로 안정적인 E2E 테스트를 만든다.
-- **Playwright Test Agents** (planner → generator → healer) 흐름을 활용해 **테스트 플랜 → 코드 → 실패 시 치유** 루프를 따른다.
-- 테스트는 항상 **사용자 여정(User journey)** 우선, 구현 디테일 의존 최소화.
-- 테스트 자동화 시 **앱 코드가 아니라 테스트 코드만** 수정한다.
-
----
-
-## 📦 도구/버전
-
-- 러너: Playwright `@playwright/test` (1.55+)
-- Node.js 20+ 권장(프로젝트는 Node 24에서 검증), TypeScript 5+
-- 브라우저: Chromium / WebKit (필수), Firefox(선택)
-- 기본 설정: `playwright.config.ts` (웹 서버 자동 기동: `yarn dev`)
-- Playwright Test Agents: planner / generator / healer 사용
+- Framework: **Next.js (App Router)**
+- Test Runner: `@playwright/test`
+- Playwright Test Agents: **planner / generator / healer**
+- 언어: TypeScript
+- 브라우저: Chromium, Firefox, WebKit 3개 동시 실행
 - MCP: `@playwright/mcp` (IDE/에이전트에서 브라우저 제어용)
 
----
+### 1.2 디렉터리 컨벤션
 
-## 📂 디렉터리/아티팩트 규칙
+> 실제 레포에 이미 Playwright Agents 기본 구조가 있다면, 그 구조를 우선합니다.  
+> (예: `npx playwright init-agents --loop=claude` 로 생성된 구조)
 
-- 사람이 작성하는 TODO 문서: `e2e/specs/{feature}/**.todo.md` (페이지/기능 단위, `[시나리오 N]` 단위 user journey)
-- planner가 작성하는 Markdown 플랜: `specs/{feature}.md` (TODO 문서 기반, steps + expected results 분리, `Origin: planner-suggested` 메모로 추가 시나리오 명시)
-- generator가 생성하는 테스트 코드: `e2e/tests/{feature}/**.spec.ts`
-- specs/tests는 동일한 폴더 구조를 유지한다.
-- 기존 Playwright 기본 `tests/` 디렉터리가 있으면 공존 가능, seed test(`tests/seed.spec.ts`)는 필수 입력으로 활용.
+기본 구조(예시):
 
----
-
-## 🤖 Agent 워크플로우
-
-### Planner
-
-- 입력: seed test(필수), TODO 문서/PRD/디자인(선택).
-- seed test 실행 후 앱을 실제 탐색, TODO 시나리오를 steps/expected로 구조화한 Markdown 플랜을 `specs/*.md`에 작성.
-- locator를 박지 말고 “무엇을 검증할지”만 기술. 테스트 코드는 생성하지 않는다.
-
-### Generator
-
-- 입력: planner 출력(`specs/*.md`), seed test, `playwright.config.ts`.
-- 출력: `e2e/tests/**.spec.ts` Playwright TS 코드.
-- 파일명: 기능+시나리오(`post-like-guest.spec.ts` 등), 테스트명은 TODO 시나리오 표현을 명확히 다듬어 사용.
-- 라우트 하드코딩 금지 → constants 사용, 없으면 오류 메시지 남기고 실행 중단. `use.baseURL` 활용.
-- 네비게이션 후 `waitForLoadState('networkidle')` 또는 주요 요소 가시성 확인. `waitForTimeout` 금지.
-- Locator 우선순위: `getByTestId` → `getByRole` → `getByLabel` → `getByText` → `locator`(최후). 다른 로케이터 사용 시 `// locator-justification` 주석.
-- Assertion: web-first `expect`, 동기 `expect`+`isVisible` 조합 금지. 중요/부수 결과는 hard/soft 적절히 구분.
-- 로그인/권한: 기존 fixture/helper(예: `auth.fixtures.ts`) 우선 재사용, 없으면 재사용성 있는 이름으로 작성.
-- 스크린샷/비디오/Trace: 실패 시 캡처(`screenshot/video/trace: retain-on-failure` 등) 설정 유지, Trace Viewer로 디버깅 안내.
-
-### Healer
-
-- 역할: 실패한 테스트를 재실행·분석 후 locator/타이밍/텍스트 등 테스트 코드만 수정해 치유.
-- 동작: 실패 식별 → 재실행 및 스냅샷/콘솔/네트워크 조사 → 패치 제안/적용 → 재실행 결과 보고.
-- 금지: 앱 구현 코드 수정, 의미 흐리는 느슨한 assertion, TODO/PRD 무시, 기능 깨졌는데 억지 통과시키기. 필요 시 `test.skip` 또는 TODO 메모 남김.
-
----
-
-## 📁 폴더 구조 (기능 기준 + 전제 접미사)
-
-기능(도메인)별 폴더만 만들고, **로그인/비로그인/공통 전제는 파일명 접미사로 구분**한다.
-
-```text
-e2e/
-├── pages/                           # Page UI 테스트 (원하면 여기도 common 가능)
-│   └── home/
-│       ├── home.auth.spec.ts
-│       ├── home.guest.spec.ts
-│       └── home.common.spec.ts      # 선택: 페이지 레벨 공통
-├── scenarios/                       # 사용자 플로우 테스트
-│   └── like/
-│       ├── like.auth.spec.ts
-│       ├── like.guest.spec.ts
-│       └── like.common.spec.ts      # ✅ 공통(권한 무관) 시나리오
-├── fixtures/
-│   └── auth/storage-state.json
-└── playwright.config.ts
+```txt
+repo/
+  .github/
+    agents/                  # init-agents 로 생성된 agent 정의들 (planner/generator/healer)
+  specs/                     # planner가 생성하는 공식 test plan
+    basic-operations.md
+  e2e/
+    specs/                   # 사람이 작성하는 TODO 시나리오 문서
+      posts/
+        post-detail.todo.md
+        post-like.todo.md
+      home/
+        home.todo.md
+    tests/                   # 실제 Playwright 테스트 코드
+      posts/
+        post-like-guest.spec.ts
+        post-like-member.spec.ts
+      home/
+        home-guest.spec.ts
+    fixtures/
+      auth.fixtures.ts
+    page-objects/
+      post-list.page.ts
+      post-detail.page.ts
+  tests/                     # (Playwright 기본 tests 디렉토리가 이미 있다면 공존)
+    seed.spec.ts             # seed test (planner/generator에서 사용)
+  playwright.config.ts
 ```
 
-- **로그인 전제**: `*.auth.spec.ts`
-- **비로그인 전제**: `*.guest.spec.ts`
-- **공통 전제**: `*.common.spec.ts`
-- 파일명은 `기능.전제.spec.ts` 형식을 유지한다(예: `like.auth.spec.ts`).
-- 파일 접미사: _.guest.spec.ts, _.auth.spec.ts, \*.common.spec.ts
-- 게스트 전용 프로젝트: (guest|common)만 매칭
-- 인증 전용 프로젝트: (auth|common)만 매칭
-- “전체” 실행은 모든 프로젝트
+- **Playwright Agents 표준**:
 
-## ▶ 실행 명령 (package.json 기준)
+  - planner: `specs/*.md` 에 Markdown test plan 생성
+  - generator: `tests/*.spec.ts` (또는 구성에 따라 하위 디렉터리) 생성
 
-- 전체: `yarn test:e2e`
-- 게스트 시나리오만: `yarn test:e2e:guest`
-- 인증 시나리오만: `yarn test:e2e:auth`
-- UI 모드: `yarn test:e2e:ui`
-- Headed: `yarn test:e2e:headed`
-- 리포트: `yarn test:e2e:report`
-- 코드 생성기(Codegen): `yarn codegen`
+- **이 프로젝트 추가 규칙**:
+
+  - 사람이 직접 작성하는 TODO 문서는 `e2e/specs/{feature}/**.todo.md`
+  - 최종 E2E 테스트 코드는 `e2e/tests/{feature}/**.spec.ts`
+  - **specs와 tests는 동일한 폴더 구조**를 유지합니다 (예: `e2e/specs/posts/` ↔ `e2e/tests/posts/`)
 
 ---
 
-## 🌐 환경/시크릿
+## 2. TODO 문서 기반 워크플로우
 
-- 앱 기본 URL은 `.env`의 `BASE_URL`/`NEXT_PUBLIC_BASE_URL`에서 파생 (하드코딩 금지).
-- 민감 정보는 환경변수로만 주입. `.env`는 커밋 금지, `.env.example`로 문서화.
-- 로그인 테스트 계정 환경변수(권장): `E2E_TEST_EMAIL`, `E2E_TEST_PASSWORD`.
-  - 하위 호환: `CYPRESS_TEST_EMAIL`, `CYPRESS_TEST_PASSWORD`도 인식(점진 전환).
-- 인증 프로젝트(storage state 사용): `e2e/fixtures/auth/storage-state.json`
-  - 생성 가이드(예): 로컬에서 로그인 후 `storageState`를 저장하는 스크립트를 실행하거나, 임시 스펙에서 `context.storageState({ path })` 호출.
-- DB/외부 서비스는 최소 시드 원칙. 테스트 간 상태 공유 금지.
+### 2.1 사람이 작성하는 TODO 문서 포맷
+
+TODO 문서는 **페이지 단위** 또는 **기능 단위**로 작성합니다.
+
+예시: `e2e/specs/post-detail.todo.md`
+
+```md
+# /posts/[id] 상세 페이지 - 좋아요
+
+[시나리오 1] 비회원이 첫 번째 게시물에 좋아요를 누르는 경우
+
+1. 비회원 상태로 /posts 페이지에 접속한다.
+2. 리스트에서 첫 번째 게시물 카드를 클릭해 상세 페이지로 이동한다.
+3. 좋아요 버튼(하트 아이콘)을 클릭한다.
+4. 로그인 유도 모달이 노출되고, "로그인이 필요한 기능입니다." 문구가 보인다.
+
+[시나리오 2] 회원이 첫 번째 게시물에 좋아요를 누르는 경우
+
+1. 테스트용 계정으로 로그인한 상태에서 /posts 페이지에 접속한다.
+2. 리스트에서 첫 번째 게시물 카드를 클릭해 상세 페이지로 이동한다.
+3. 좋아요 버튼을 클릭하면, 좋아요 카운트가 +1 증가한다.
+4. 새로고침 후에도 좋아요 상태와 카운트가 유지된다.
+```
+
+규칙:
+
+- `[시나리오 N]` 단위로 **하나의 user journey** 를 설명합니다.
+- 각 단계는 "사용자가 하는 행동"과 "보여야 하는 결과"를 자연스럽게 섞어도 됩니다.
+- "첫 번째 게시물" 처럼 데이터 의존성이 있는 경우, 항상 존재하는 고정 데이터 기준으로 작성하는 것을 권장합니다.
+
+### 2.2 Agents 와 TODO 문서의 관계
+
+에이전트는 TODO 문서를 다음과 같이 사용합니다:
+
+- **planner**
+
+  - `e2e/specs/*.todo.md` 와 실제 앱을 함께 참고하여,
+    Playwright 표준 포맷의 Markdown test plan (`specs/*.md`) 을 생성/보완합니다.
+  - 사람이 쓴 TODO 내용을 **덮어쓰지 말고**,
+    시나리오를 더 구조화(섹션/Expected results 분리 등)하는 방향으로 정리합니다.
+
+- **generator**
+
+  - `specs/*.md` (planner output)를 기반으로,
+    `e2e/tests/**.spec.ts` 파일을 만듭니다.
+
+- **healer**
+
+  - 실패한 `e2e/tests/**.spec.ts` 를 재실행·분석하고,
+    locator/타이밍/데이터 이슈를 수정하여 테스트를 회복시킵니다.
 
 ---
 
-## ⚙ Playwright 설정 가이드
+## 3. Planner 에이전트 규칙
 
-- 필수 브라우저: Safari(WebKit), Chrome(Chromium)
-- 모든 시나리오는 최소 2개의 브라우저에서 병렬 실행한다.
-- 추가 브라우저(Firefox 등)는 필요 시 CI matrix에 확장한다.
+### 3.1 입력
 
-## 🧰 품질 점검(린트)
+- 자연어 요청: 예) `"비회원/회원 좋아요 플로우에 대한 플랜을 만들어줘"`
+- 필수: **seed test** 파일 (예: `tests/seed.spec.ts`)
+- 선택:
 
-- 전체 린트: `yarn lint`
-- 자동 수정: `yarn lint:fix`
-- e2e 전용: 미사용 Playwright `request` 인자는 자동 삭제됨(자동 수정 필요).
-- 미사용 인자/변수는 `_` 접두로 예외 허용(`_request` 등) — 꼭 필요한 경우에만 사용.
+  - 관련 TODO 문서(`e2e/specs/post-detail.todo.md`)
+  - 관련 PRD / 디자인 문서
+
+### 3.2 동작 규칙
+
+1. **seed test 실행**
+
+   - Playwright가 제공하는 seed test 구조를 그대로 따릅니다.
+   - 이 프로젝트에서 seed test는 보통 "기본 Next.js 앱 + 공통 fixture 세팅" 정도만 정의합니다.
+
+   ```ts
+   // tests/seed.spec.ts
+   import { test, expect } from './fixtures';
+
+   test('seed', async ({ page }) => {
+     // 공통 fixture / 전역 셋업이 정상 동작하는지만 확인
+   });
+   ```
+
+2. **앱 탐색 + TODO 문서 병합**
+
+   - seed test를 기준으로 앱을 실행하고, **브라우저를 실제로 탐색**해 DOM 구조를 이해합니다.
+   - TODO 문서의 시나리오(예: "비회원이 좋아요를 누르면 로그인 모달 노출")를 기준으로,
+
+     - 단계(steps)
+     - 기대 결과(expected results)
+       를 명시적으로 나눈 test plan 을 만듭니다.
+
+3. **Markdown test plan 작성**
+
+- 출력 위치: `specs/{feature-name}.md`
+- 구조 예시 (공식 TodoMVC 예제를 참고한 형태):
+
+```md
+# /posts 상세 & 상세 페이지 - 좋아요 관련 Test Plan
+
+## 1. Guest Like Flow
+
+**Seed:** `tests/seed.spec.ts`  
+**Source TODO:** `e2e/specs/post-detail.todo.md` 의 [시나리오 1]
+
+### Steps
+
+1. 비회원 상태로 `/posts` 페이지에 접근한다.
+2. 첫 번째 게시물 카드를 클릭해 상세 페이지로 이동한다.
+3. 좋아요 버튼(하트 아이콘)을 클릭한다.
+
+### Expected Results
+
+- 로그인 유도 모달이 노출된다.
+- 모달 내에 `"로그인이 필요한 기능입니다."` 텍스트가 보인다.
+- 좋아요 카운트 / 상태는 변경되지 않는다.
+```
+
+4. **주의사항**
+
+- planner는 **테스트 코드를 직접 생성하지 않습니다.**
+- 앱 구조를 모른다고 가정하고 locator 를 박지 말고,
+  "무엇을 검증해야 하는지"만 Markdown 에 표현합니다.
+- TODO 문서에 없는 새로운 시나리오를 임의로 추가할 수 있으나,
+  그 경우에는 섹션에 `Origin: planner-suggested` 같은 메모를 남깁니다.
 
 ---
 
-## 🔎 로케이터 우선순위 (TestID-First)
+## 4. Generator 에이전트 규칙
 
-### 원칙
+### 4.1 입력
 
-- 최우선으로 `getByTestId`를 사용한다.
-- `getByTestId`가 없다면 해당 element에 중복되지 않도록 testId를 생성한다.
-- 불가피하게 다른 로케이터(`getByRole`, `getByLabel`, `locator()` 등)를 쓸 경우 → **반드시 근거 주석**을 남긴다.
+- `specs/*.md` (planner가 만든 Markdown plan)
+- seed test (`tests/seed.spec.ts`)
+- 이 레포의 `playwright.config.ts`
 
-### 규칙
+### 4.2 출력
 
-1. 모든 주요 상호작용 요소에는 `data-testid`를 부여한다.
-2. 테스트 코드에서는 `page.getByTestId('<id>')`를 최우선으로 사용한다.
-3. 다른 로케이터 사용 시 `// locator-justification: ...` 주석으로 이유를 설명한다.
-4. CSS/XPath 단독 사용은 최후의 수단이다.
+- Playwright TypeScript 테스트 코드
+- 위치: `e2e/tests/**.spec.ts`
 
-### TestID 네이밍 가이드
+예: `specs/basic-operations.md` → `e2e/tests/posts/post-like-guest.spec.ts`
 
-- **케밥케이스** 사용: `like-button`, `like-count`, `profile-save-button`
-- **고유·의미 중심**: `btn1`, `item` 등 모호/중복 금지
+### 4.3 코드 작성 규칙
 
-### 예시
+#### 4.3.1 기본 구조
 
 ```ts
-// ✅ 권장
-await page.getByTestId('like-button').click();
+// spec: specs/post-like.md
+// seed: tests/seed.spec.ts
 
-// 허용 (근거 주석 필수)
-// locator-justification: 접근성 레이블 검증 목적
-await page.getByRole('button', { name: '좋아요' }).click();
+import { test, expect } from '../../fixtures/auth.fixtures';
+
+test.describe('/posts/[id] - 좋아요', () => {
+  test('비회원이 좋아요를 누르면 로그인 모달이 뜬다', async ({ page }) => {
+    // ...
+  });
+
+  test('회원이 좋아요를 누르면 카운트가 증가한다', async ({ memberPage }) => {
+    // ...
+  });
+});
 ```
 
+- 파일명은 **기능 + 시나리오** 조합:
+
+  - `/posts/[id]` 좋아요 → `post-like-guest.spec.ts`, `post-like-member.spec.ts` 등
+
+- 테스트 이름은 TODO 문서의 시나리오 설명을 거의 그대로 사용하되, 약간 더 명확하게 다듬습니다.
+
+#### 4.3.2 Next.js & 네비게이션
+
+- 라우트 주소는 **절대 하드코딩하지 않습니다**. 반드시 constants 파일에서 가져옵니다.
+
+```ts
+// constants/routes.ts 또는 유사한 파일에서
+import { ROUTES } from '@/constants/routes';
+
+// 라우트가 constants에 정의되어 있는지 확인
+if (!ROUTES.POSTS) {
+  throw new Error(
+    'ROUTES.POSTS가 constants에 정의되어 있지 않습니다. constants 파일을 확인하세요.'
+  );
+}
+
+await page.goto(ROUTES.POSTS);
+```
+
+- 라우트 주소가 constants에 없으면:
+
+  - 테스트를 실행하지 않고 사용자에게 알립니다.
+  - 예: `"ROUTES.POSTS가 constants에 정의되어 있지 않습니다. constants 파일을 확인하세요."` 같은 에러 메시지
+
+- `playwright.config.ts` 의 `use.baseURL` 을 최대한 사용합니다.
+
+- 페이지 전환 후:
+
+  - `await page.waitForLoadState('networkidle')` **또는**
+  - 특정 주요 요소 visibility assertion (`await expect(...).toBeVisible()`)
+    로 안정화 후 나머지 검증을 진행합니다.
+
+- `waitForTimeout` 사용은 **금지** (flaky 원인).
+
+#### 4.3.3 스크린샷 / 비디오 / Trace
+
+- `playwright.config.ts`에서 실패 시 자동 캡처 설정:
+
+```ts
+// playwright.config.ts
+export default defineConfig({
+  use: {
+    screenshot: 'only-on-failure', // 실패 시 스크린샷 자동 저장
+    video: 'retain-on-failure', // 실패 시 비디오 자동 저장
+    trace: 'retain-on-failure', // 실패 시 trace 자동 저장
+  },
+});
+```
+
+- 디버깅 시 Trace Viewer 활용:
+
+```bash
+npx playwright test --trace on
+npx playwright show-report
+```
+
+#### 4.3.4 Locator 전략
+
+> 공식 가이드와 MCP/Agents 글의 best practice 를 따릅니다.
+
+우선순위:
+
+1. `page.getByTestId(...)` — 최우선. 가장 안정적이고 명시적.
+2. `page.getByRole(...)` — 접근성 검증 겸용
+3. `page.getByLabel(...)` — 폼 컨트롤용
+4. `page.getByText(...)` — 비상호작용 요소용
+5. CSS/XPath locator (`page.locator`) — 최후 수단
+
+예:
+
+```ts
+const firstPostCard = page.getByTestId('post-card').first();
+const likeButton = page.getByRole('button', { name: /좋아요/i });
+const loginModal = page.getByRole('dialog', {
+  name: /로그인이 필요한 기능입니다./i,
+});
+```
+
+리스트 + 필터:
+
+```ts
+const postItem = page
+  .getByRole('article')
+  .filter({ hasText: '첫 번째 게시물 제목' });
+```
+
+#### 4.3.5 Assertions
+
+- web-first assertion(`await expect(...)`) 만 사용합니다.
+
+```ts
+await expect(page.getByText('로그인이 필요한 기능입니다.')).toBeVisible();
+await expect(likeButton).toBeEnabled();
+```
+
+- `.isVisible()` 호출 후 동기 `expect` 쓰는 패턴은 금지.
+- 여러 검증이 필요한 경우:
+
+  - 주요 결과는 hard assertion
+  - 덜 중요한 UI 메시지 등은 `expect.soft` 사용 가능.
+
+#### 4.3.6 로그인 / 권한
+
+- 이미 존재하는 fixture / helper 를 **최우선 재사용**합니다. (예: `auth.fixtures.ts`)
+- 없다면 새로 작성하되, 재사용을 위한 이름으로 만듭니다.
+
+```ts
+// e2e/fixtures/auth.fixtures.ts
+import { test as base } from '@playwright/test';
+import { ROUTES } from '@/constants/routes';
+
+export const test = base.extend<{
+  memberPage: (typeof base)['page'];
+}>({
+  memberPage: async ({ page }, use) => {
+    if (!ROUTES.LOGIN) {
+      throw new Error(
+        'ROUTES.LOGIN이 constants에 정의되어 있지 않습니다. constants 파일을 확인하세요.'
+      );
+    }
+    await page.goto(ROUTES.LOGIN);
+    await page.getByLabel('이메일').fill(process.env.E2E_USER_EMAIL!);
+    await page.getByLabel('비밀번호').fill(process.env.E2E_USER_PASSWORD!);
+    await page.getByRole('button', { name: /로그인/ }).click();
+    if (!ROUTES.HOME) {
+      throw new Error(
+        'ROUTES.HOME이 constants에 정의되어 있지 않습니다. constants 파일을 확인하세요.'
+      );
+    }
+    await page.waitForURL(ROUTES.HOME);
+    await use(page);
+  },
+});
+```
+
+#### 4.3.7 Functional Page Object Model (POM)
+
+> **참고**: 이 섹션은 [토스인컴의 E2E 자동화 여정](https://toss.tech/article/income-qa-e2e-automation)에서 영감을 받았습니다.
+
+**핵심 원칙**: 클래스 기반 POM 대신 **함수형(Stateless) POM**을 사용합니다.
+
+- **상태를 가지는 클래스 대신, 무상태 함수로 페이지 동작을 설계**합니다.
+- 원칙: 입력으로 `page`(그리고 필요 시 `context`)를 받고, 결과로 `page`를 돌려줍니다.
+- 이렇게 하면 `this` 상태 관리와 상속 구조의 복잡성을 피하고, 유지보수 비용을 줄일 수 있습니다.
+
+**Before — POM 없이 작성된 테스트 (중복·취약)**
+
+```ts
+// ❌ 이런 코드가 여러 파일에 복사되어 있었습니다.
+async function test1() {
+  await page.goto(ROUTES.POSTS);
+  await page.click('#category-selector');
+  await page.click('button:has-text("전체")');
+  await page.click('button:has-text("작성하기")'); // 텍스트 바뀌면 전 파일 수정
+  await page.fill('[placeholder="제목을 입력하세요"]', '테스트 제목');
+  // ...
+}
+```
+
+**After — 함수형 POM으로 캡슐화**
+
+```ts
+// e2e/page-objects/post-list.page.ts
+import { Page, BrowserContext } from '@playwright/test';
+import { ROUTES } from '@/constants/routes';
+
+/**
+ * 게시물 목록 페이지로 이동하고 초기 상태를 준비합니다.
+ * @param page - Playwright Page 객체
+ * @param context - BrowserContext (필요 시)
+ * @returns 준비된 Page 객체
+ */
+export async function gotoPostListPage(
+  page: Page,
+  context?: BrowserContext
+): Promise<Page> {
+  if (!ROUTES.POSTS) {
+    throw new Error('ROUTES.POSTS가 constants에 정의되어 있지 않습니다.');
+  }
+  await page.goto(ROUTES.POSTS);
+  await waitForNetworkIdleSafely(page);
+  return page;
+}
+
+/**
+ * 카테고리 선택 버튼을 클릭합니다.
+ * @param page - Playwright Page 객체
+ * @param categoryName - 선택할 카테고리 이름 (예: "전체", "공지")
+ */
+export async function clickCategoryButton(
+  page: Page,
+  categoryName: string
+): Promise<Page> {
+  await clickButton(page, categoryName);
+  await waitForNetworkIdleSafely(page);
+  return page;
+}
+
+/**
+ * 작성하기 버튼을 클릭합니다.
+ * 문구가 바뀌면 여기 "한 곳"만 수정하면 됩니다.
+ */
+export async function clickWriteButton(page: Page): Promise<Page> {
+  await clickButton(page, '작성하기');
+  await waitForNetworkIdleSafely(page);
+  return page;
+}
+```
+
+**테스트는 "사용자가 읽는 시나리오"처럼**
+
+```ts
+// e2e/tests/posts/post-write.spec.ts
+import { test, expect } from '../../fixtures/auth.fixtures';
+import {
+  gotoPostListPage,
+  clickCategoryButton,
+  clickWriteButton,
+} from '../../page-objects/post-list.page';
+
+test('회원이 게시물을 작성할 수 있다', async ({ memberPage }) => {
+  let currentPage = await gotoPostListPage(memberPage);
+  currentPage = await clickCategoryButton(currentPage, '전체');
+  currentPage = await clickWriteButton(currentPage);
+  // ...
+});
+```
+
+**네이밍 컨벤션 (가독성 강화)**
+
+| 접두사                | 의미        | 예시                                 |
+| --------------------- | ----------- | ------------------------------------ |
+| `goto`                | 페이지 이동 | `gotoPostListPage()`                 |
+| `click`               | 클릭        | `clickLikeButton()`                  |
+| `enter`               | 입력        | `enterPostTitle()`                   |
+| `answer`              | 질문 응답   | `answerConfirmDialog()`              |
+| `add`/`skip`/`update` | 데이터 조작 | `addComment()`, `skipOptionalStep()` |
+| `verify`/`check`      | 검증        | `verifyPostCount()`                  |
+| `waitFor`             | 대기        | `waitForPostListReady()`             |
+| `complete`            | 복합 플로우 | `completeLogin()`                    |
+
+**사용자 시나리오 기준으로 파일 나누기**
+
+파일을 나눌 때는 **화면이 아니라 사용자 시나리오**를 기준으로 경계를 나눕니다.
+
+예: 게시물 작성 플로우를 단계별로 분리
+
+```ts
+e2e/page-objects/
+├── post-list.page.ts        # 목록 페이지 (조회, 필터)
+├── post-write.page.ts       # 작성 페이지 (제목, 내용 입력)
+├── post-detail.page.ts      # 상세 페이지 (조회, 좋아요, 댓글)
+└── post-edit.page.ts        # 수정 페이지 (편집, 저장)
+```
+
+이렇게 나누면 페이지 전환이 잦아도 책임 경계가 명확하고, 각 단계를 독립적으로 수정·재사용할 수 있습니다.
+
+**Robust Click Strategy — 클릭 실패에 흔들리지 않게**
+
+React 렌더링 타이밍으로 생기는 간헐 실패(플래키)를 줄이기 위해, 클릭 유틸에 4단계 폴백을 넣습니다.
+
+```ts
+// e2e/utils/click.utils.ts
+import { Page } from '@playwright/test';
+
+/**
+ * 버튼을 안정적으로 클릭합니다.
+ * 4단계 폴백 전략을 사용하여 플래키를 최소화합니다.
+ *
+ * @param page - Playwright Page 객체
+ * @param buttonName - 클릭할 버튼의 텍스트 또는 aria-label
+ * @param options - 추가 옵션
+ * @returns 클릭 성공 여부
+ */
+export async function clickButton(
+  page: Page,
+  buttonName: string,
+  options: { role?: 'button' | 'link' } = {}
+): Promise<void> {
+  const role = options.role || 'button';
+  const button = page.getByRole(role, { name: buttonName });
+  await button.waitFor({ state: 'visible' });
+
+  try {
+    // 1) Enter 키 (가장 안정적)
+    await button.focus();
+    await page.keyboard.press('Enter');
+  } catch {
+    try {
+      // 2) 기본 클릭
+      await button.click();
+    } catch {
+      try {
+        // 3) Force 클릭
+        await button.click({ force: true });
+      } catch {
+        // 4) JS 직접 실행
+        await page.evaluate(
+          ({ name, role }) => {
+            const elements = Array.from(
+              document.querySelectorAll(`${role}, [role="${role}"]`)
+            );
+            const btn = elements.find(
+              (el) =>
+                el.textContent?.includes(name) ||
+                el.getAttribute('aria-label') === name
+            ) as HTMLElement;
+            btn?.click();
+          },
+          { name: buttonName, role }
+        );
+      }
+    }
+  }
+
+  await waitForNetworkIdleSafely(page);
+}
+```
+
+**페이지 전환 자동 감지 — 새 창/리다이렉트에서도 안전하게**
+
+Next.js의 클라이언트 사이드 네비게이션이나 외부 링크로 인해 새 창이 열리거나 리다이렉트가 일어나면 기존 `page`가 닫힐 수 있습니다. 항상 최신 유효 페이지를 다시 얻어 쓰는 패턴을 유틸로 통일합니다.
+
+```ts
+// e2e/utils/page.utils.ts
+import { BrowserContext, Page } from '@playwright/test';
+
+/**
+ * 컨텍스트에서 유효한 최신 페이지를 가져옵니다.
+ * 새 창이나 리다이렉트 후에도 안전하게 동작합니다.
+ *
+ * @param context - BrowserContext
+ * @param excludeUrls - 제외할 URL 패턴 (예: ['scrape', 'popup'])
+ * @returns 유효한 Page 객체
+ */
+export async function getLatestValidPage(
+  context: BrowserContext,
+  excludeUrls: string[] = []
+): Promise<Page> {
+  const pages = context.pages();
+  for (let i = pages.length - 1; i >= 0; i--) {
+    const p = pages[i];
+    if (p.isClosed()) continue;
+
+    const url = p.url();
+    const shouldExclude = excludeUrls.some((pattern) => url.includes(pattern));
+    if (!shouldExclude) return p;
+  }
+  throw new Error('유효한 페이지를 찾을 수 없습니다');
+}
+
+/**
+ * 네트워크가 안정될 때까지 안전하게 대기합니다.
+ * 타임아웃이 나더라도 테스트는 계속 진행합니다.
+ */
+export async function waitForNetworkIdleSafely(
+  page: Page,
+  timeout: number = 5000
+): Promise<void> {
+  try {
+    await page.waitForLoadState('networkidle', { timeout });
+  } catch {
+    // 타임아웃이 나도 계속 진행 (네트워크가 완전히 멈추지 않을 수 있음)
+  }
+}
+```
+
+테스트 본문에서는 전환마다 `currentPage = ...`를 명시적으로 교체해 항상 올바른 탭에서 동작하도록 합니다.
+
+```ts
+test('외부 링크로 이동 후 돌아오기', async ({ page, context }) => {
+  let currentPage = await gotoPostListPage(page);
+  // 외부 링크 클릭 (새 창 열림)
+  await currentPage.getByRole('link', { name: '외부 사이트' }).click();
+  // 최신 유효 페이지 가져오기
+  currentPage = await getLatestValidPage(context);
+  await expect(currentPage).toHaveURL(/external-site/);
+});
+```
+
+**읽히는 테스트를 만드는 법**
+
+1. **서술형 제목으로 시작하기**
+
+   - 테스트는 제목부터 서술형 문장으로 작성합니다.
+   - 예: `"비회원이 좋아요를 누르면 로그인 모달이 뜬다"`
+
+2. **사전조건 명확히 하기**
+
+   - 사전조건에는 "로그인 가능한 유저", "게시물 목록 접근 가능"처럼 최소한의 맥락만 남깁니다.
+
+3. **Given-When-Then 구조로 작성하기**
+
+   - 시나리오는 Given–When–Then의 리듬으로 작성합니다.
+   - 예: "로그인한 상태에서(Given), 게시물 목록에서 첫 번째 게시물을 클릭하고(When), 좋아요 버튼을 누르면 카운트가 증가한다(Then)."
+
+4. **자연어를 코드로 변환하기**
+   - 자연어로 먼저 작성한 시나리오를 그대로 코드로 옮깁니다.
+
+```ts
+test('로그인한 회원이 게시물에 좋아요를 누르면 카운트가 증가한다', async ({
+  memberPage,
+}) => {
+  // Given: 로그인한 상태에서 게시물 목록 페이지 접근
+  let currentPage = await gotoPostListPage(memberPage);
+
+  // When: 첫 번째 게시물 클릭 → 상세 페이지 이동
+  currentPage = await clickFirstPostCard(currentPage);
+
+  // When: 좋아요 버튼 클릭
+  const initialCount = await getLikeCount(currentPage);
+  await clickLikeButton(currentPage);
+
+  // Then: 좋아요 카운트가 1 증가했는지 확인
+  await expect(currentPage.getByTestId('like-count')).toHaveText(
+    String(initialCount + 1)
+  );
+});
+```
+
+핵심은 하나입니다. **테스트가 먼저 읽히고, 코드가 그 뒤를 따라간다.** 이 순서를 지키면 비개발자도 테스트를 이해할 수 있고, 개발자는 즉시 실행 가능한 스크립트를 얻습니다.
+
 ---
 
-## 🧪 테스트 작성 규칙
+## 5. Healer 에이전트 규칙
 
-- **위치**: `e2e/specs/<기능>/<기능>.(auth|guest|common).spec.ts`
-- **독립성**: 상태 공유 금지, 생성/삭제는 API/시드 유틸 활용, 잔여 상태 제거
-- **동기화**: `waitForLoadState('networkidle')`, 웹-퍼스트 assertion 사용
-- **금지**: 무의미한 `waitForTimeout`, 하드코딩 URL/시크릿
-- **플레이크**: 원인 남기고 임시 격리(`test.fixme`), 7일 내 복구
-- **태깅**: 제목 접두어로 `[smoke]`, `[slow]` 등 태그를 붙여 선택 실행을 지원한다.
-- **사용자 관점**: DOM 내부 구조/DB에 과도 의존 금지, 사용자 행동/결과 중심 검증.
-- **테스트 명/파일 명**: 무엇을 검증하는지 즉시 이해되게 작성.
-- **독립성 확보**: 각 테스트가 로그인/시드 등 필요한 상태를 자체 준비. 반복 작업은 fixture/hook으로 추상화.
-- **중복 허용**: 과도한 추상화로 가독성 해치지 말고, 필요 시 helper/fixture로 추상화.
+### 5.1 역할
+
+- 실패한 Playwright 테스트를 디버깅하고, 가능한 경우 자동으로 수정합니다.
+- 주로 아래를 수정 대상로 삼습니다:
+
+  - 바뀐 locator (레이블 이름 변경, 버튼 텍스트 변경 등)
+  - 타이밍 이슈 (불필요한 `waitForTimeout`, 잘못된 load 조건 등)
+  - 경미한 데이터 변경 (텍스트 문구 변경, 카운트 값 정합성 등)
+
+### 5.2 동작 순서
+
+1. 실패한 테스트 식별
+
+   - `mcp__playwright-test__test_list` / `test_run` 등을 통해 실패 케이스를 찾습니다.
+
+2. 재실행 & UI 조사
+
+   - 실패 지점을 재실행하고, `browser_snapshot`, `browser_console_messages`, `browser_network_requests` 등을 활용해 원인을 찾습니다.
+
+3. 패치 제안 & 적용
+
+   - locator 업데이트, 불필요한 wait 제거, assertion 문구 수정 등,
+     **테스트 코드만 수정**하는 패치를 제안하고 적용합니다.
+
+4. 재실행 후 결과 보고
+
+   - 수정 후 다시 테스트를 실행해서 통과 여부를 확인합니다.
+   - 기능 자체가 깨진 경우, 테스트를 무리하게 "통과" 시키지 말고
+     주석/메모와 함께 실패 상태로 남기거나 `test.skip` 으로 전환합니다.
+
+### 5.3 금지사항
+
+- 앱의 실제 구현 코드(Next.js 페이지/컴포넌트/백엔드 코드)를 수정하지 않습니다.
+- 의미를 흐리는 "느슨한 assertion"(ex. `toBeTruthy`) 로 바꾸어 억지로 통과시키지 않습니다.
+- TODO 문서 / PRD 의 요구사항을 무시하고, 임의의 behavior로 정의를 바꾸지 않습니다.
 
 ---
 
-## ✅ Definition of Done (E2E)
+## 6. 공통 테스트 철학
 
-- [ ] 목적/사용자 행위가 제목에 드러남
-- [ ] 가능한 곳에서 `getByTestId` 사용
-- [ ] 다른 로케이터 사용 시 `locator-justification` 주석 있음
-- [ ] 데이터 격리/정리 보장
-- [ ] 전제별 파일 접미사 적용(`.auth`, `.guest`)
-- [ ] 리포트/아티팩트 확인(trace/video/screenshot)
-- [ ] CI에서 안정성 확보(retries/worker/리포터 구성)
-- [ ] TODO 문서/PRD 요구사항을 충족했는지 검증 (없다면 보수적 TODO 주석으로 남김)
+> 여러 자료에서 공통으로 강조하는 E2E / Playwright best practice 와  
+> [토스인컴의 E2E 자동화 여정](https://toss.tech/article/income-qa-e2e-automation)에서 배운 Functional POM 철학을 이 프로젝트 기준으로 요약한 섹션.
+
+1. **사용자 눈에 보이는 행동만 검증합니다.**
+
+   - DOM 깊은 구조, 내부 state, API 형태 등 구현 세부사항에 과도하게 의존하지 않습니다.
+
+2. **테스트는 서로 독립적이어야 합니다 (Test Isolation).**
+
+   - 각 테스트는 필요한 상태(로그인, seed 데이터)를 스스로 준비합니다.
+   - 테스트 격리는 **재현성을 높이고, 디버깅을 쉽게 하며, 연쇄 실패를 방지**합니다.
+   - `test.beforeEach()` 훅으로 각 테스트 전 반복 작업을 자동화하거나,
+     setup project를 활용해 로그인 상태를 재사용합니다.
+
+3. **약간의 중복은 허용하되, 복잡해지면 helper/fixture 로 추상화합니다.**
+4. **테스트 명과 파일 명을 보면 "무엇을 검증하는지" 바로 떠오르게 만듭니다.**
+5. **플레이크 방지를 최우선으로 고려합니다.**
+
+   - 타이밍 이슈는 web-first assertion/locator 전략으로 해결합니다.
+   - Robust Click Strategy (4단계 폴백)를 사용하여 클릭 실패에 내성을 만듭니다.
+
+6. **에이전트는 테스트 코드만 자동화합니다.**
+
+   - 비즈니스 로직, 도메인 규칙은 사람이 정의한 TODO 문서 / PRD 를 항상 우선합니다.
+
+7. **Functional POM: 복잡함을 이기는 방법은 단순화와 일관성입니다.**
+
+   - 상속과 클래스보다 **작은 함수와 명시적 컨텍스트**가 훨씬 강합니다.
+   - 자주 변하는 요소(문구, 셀렉터, 대기 로직)일수록 **한 곳(POM/유틸)에 모아 관리**하는 게 낫습니다.
+   - 페이지 전환 시에는 **반드시 currentPage를 새로 할당**하는 원칙을 지킵니다.
+   - 과한 추상화를 피하고, **작은 함수와 명시적 인자로 명료함**을 택합니다.
+
+8. **읽히는 테스트를 만듭니다.**
+
+   - 테스트는 Given-When-Then 구조로 작성하고, 서술형 제목을 사용합니다.
+   - 테스트 본문에는 최대한 **비즈니스 문장만 남기고**, 버튼/셀렉터/대기 로직은 모두 POM이 책임집니다.
+   - 코드는 문서처럼 작성합니다. 모든 함수에는 JSDoc으로 사용법과 주의사항을 적어둡니다.
 
 ---
 
-## 📌 운영 메모
+## 7. 이 문서를 읽는 에이전트에게
 
-- 기능 단위로 폴더를 구성하고 전제는 파일명 접미사로만 구분한다.
-- `getByTestId` 중심으로 작성하여 안정성을 확보한다.
-- 모든 테스트/리뷰/문서는 한글로 작성한다(코드 식별자는 영어 가능).
-- 모호하면 사용자에게 질문하거나, 테스트 파일 상단에 `// TODO:`로 가장 보수적 가정을 남긴다.
+1. 사람이 `e2e/specs/*.todo.md` 에 적어둔 시나리오를 **진실의 근원(source of truth)** 으로 삼습니다.
+2. Playwright Test Agents 의 흐름(planner → generator → healer)을 따르되,
+   각 단계에서 이 문서에 정의된 규칙을 항상 참고합니다.
+3. **앱 코드 대신 테스트 코드에만 손을 댑니다.**
+4. 모호한 부분이 있다면:
+
+   - (대화 가능한 환경이면) 사용자에게 질문합니다.
+   - 그렇지 않다면 테스트 파일 상단에 `// TODO:` 주석을 남기고, 가장 보수적인 가정으로 작성합니다.
+
+이 가이드는, TODO 문서만 써주면
+Planner / Generator / Healer / MCP 를 통해 **끝까지 끌고 갈 수 있는** 테스트 환경을 만들기 위한 기준입니다.
+
+---
+
+## 참고 자료
+
+- [토스인컴 세금 환급 서비스: 빠른 속도에서 품질을 지키기 위한 E2E 자동화 여정](https://toss.tech/article/income-qa-e2e-automation) (정수호, 2025년 12월 2일)
+  - Functional Page Object Model (POM) 접근법
+  - Robust Click Strategy
+  - 읽히는 테스트 작성법
+  - 페이지 전환 자동 감지

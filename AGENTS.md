@@ -17,13 +17,30 @@ language: ko
 
 ## 📚 규칙 출처 & 계층
 
-- `.cursor/rules/*.mdc`: 파일 glob 기준 자동 적용. 주요 문서:
-  - `accessibility.mdc`, `frontend-quality.mdc`, `e2e.mdc`, `stack-auth.mdc`, `neon-auth.mdc`.
-- `.codex/agents/*.md`: 도메인별 세부 가이드.
-  - `frontend-quality.md`, `testing.md`, `accessibility.md`.
-- `AGENTS.md`(본 문서)는 위 두 계층을 요약하며 **precedence 100**이다.  
+### 규칙 파일 구조
+
+- **`.cursor/rules/*.mdc`**: Cursor가 자동으로 적용하는 규칙 파일 (파일 glob 기준)
+  - `accessibility.mdc` - 접근성 규칙 (시맨틱 태그, ARIA, 키보드 탐색)
+  - `frontend-quality.mdc` - 프론트엔드 코드 품질 규칙 (가독성, 예측 가능성, 응집도, 결합도)
+  - `e2e.mdc` - E2E 테스트 규칙 (Playwright Test Agents, Functional POM)
+  - `agents-rule-of-two.mdc` - AI 에이전트 보안 프레임워크 (Meta Agents Rule of Two)
+  - `stack-auth.mdc` - Stack Auth 설정 및 사용 가이드
+  - `neon-auth.mdc` - Neon Auth 데이터 동기화 규칙
+
+- **`.codex/agents/*.md`**: 도메인별 세부 철학 문서 (에이전트가 참조해야 할 상세 가이드)
+  - `frontend-quality.md` - 프론트엔드 코드 품질 철학 (TOSS Frontend Fundamentals 기반)
+  - `accessibility.md` - 접근성 철학 및 가이드
+  - `testing.md` - E2E 테스트 철학 (Playwright Test Agents 워크플로우)
+  - `agents-rule-of-two.md` - Agents Rule of Two 보안 프레임워크 상세 가이드
+
+- **`AGENTS.md`**(본 문서): 위 두 계층을 요약하며 **precedence 100**이다.  
   `.codex/agents`(pre 115~130) 및 `.cursor/rules`가 상위 규칙이므로, 충돌 시 상위 규칙을 우선 적용한다.
-- 규칙 간 충돌 또는 애매함이 발생하면 **진행 전 질문**한다.
+
+### 규칙 적용 우선순위
+
+1. **작업 시작 전**: 관련 `.codex/agents/*.md` 철학 문서를 먼저 읽어 전체 맥락을 이해한다.
+2. **코드 작성 중**: `.cursor/rules/*.mdc` 규칙이 자동으로 적용되며, 필요 시 해당 파일을 참조한다.
+3. **충돌 발생 시**: 상위 규칙(`.codex/agents` 또는 `.cursor/rules`)을 우선 적용하고, 애매한 경우 **진행 전 질문**한다.
 
 ---
 
@@ -62,8 +79,26 @@ language: ko
 - TypeScript 우선, `any` 사용 시 사유 명시.
 - ESLint + Prettier + import 정렬 유지, 의미 있는 변수명 사용.
 - 변경은 최소·국소화, 기존 스타일과 일관 유지.
-- 프론트엔드 작업 시 `.codex/agents/frontend-quality.md` + `.cursor/rules/frontend-quality.mdc` 의 4원칙(가독성/예측 가능성/응집도/결합도)을 반드시 따른다.
-- 접근성 관련 작업은 `.codex/agents/accessibility.md` 와 `.cursor/rules/accessibility.mdc` 를 최우선으로 따른다(시맨틱 태그, ARIA 레이블/상태, 키보드 탐색, 컴포넌트별 패턴).
+
+### 프론트엔드 코드 품질
+
+- 프론트엔드 작업 시 `.codex/agents/frontend-quality.md` + `.cursor/rules/frontend-quality.mdc` 의 4원칙을 반드시 따른다:
+  - **가독성**: 맥락을 작게 유지, 같이 실행되지 않는 코드 분리, 구현 상세 추상화
+  - **예측 가능성**: 일관된 이름과 반환 타입, 숨은 부작용 방지
+  - **응집도**: 함께 변경되는 것들을 가까이 두기, 도메인별 폴더 구조
+  - **결합도**: 변경의 영향을 제어, 책임을 하나씩 관리, 중복 코드 허용
+
+### 접근성 (a11y)
+
+- 접근성 관련 작업은 `.codex/agents/accessibility.md` 와 `.cursor/rules/accessibility.mdc` 를 최우선으로 따른다:
+  - 시맨틱 태그 우선 사용, `role` 명시
+  - 모든 인터랙티브 요소에 레이블 제공 (`aria-label`, `aria-labelledby`, `<label>`)
+  - 상태 속성 동기화 (`checked`/`aria-checked`, `open`/`aria-expanded` 등)
+  - 키보드 탐색 지원 (Tab, Enter, Space, 방향키)
+  - 라이브 리전 사용 (`aria-live`, `role="alert"`, `role="status"`)
+
+### 인증 및 데이터베이스
+
 - Stack Auth/Neon Auth 관련 작업은 `.cursor/rules/stack-auth.mdc` 및 `.cursor/rules/neon-auth.mdc` 의 설치/SDK/데이터-동기화 지침을 선행 검토한다.
 
 ### 포매팅(Prettier 규칙 준수)
@@ -150,12 +185,17 @@ language: ko
 
 - 주요 사용자 경로(`home`, `search`, `auth`)는 반드시 E2E로 검증한다.
 - `.codex/agents/testing.md` 및 `.cursor/rules/e2e.mdc` 의 Playwright Test Agents 흐름(planner → generator → healer)과 TestID-first 규칙을 따른다.
+- **Functional Page Object Model (POM)** 사용: 클래스 대신 무상태 함수로 페이지 동작을 설계한다.
+- **Robust Click Strategy**: 클릭 실패에 내성을 넣기 위해 4단계 폴백 전략을 사용한다.
 - 테스트는 빠르고 독립적으로 유지하고, 외부 의존성은 최소화한다.
 
 ---
 
 ## 🔒 보안 및 샌드박스
 
+- **Agents Rule of Two**: AI 에이전트 설계 시 `.codex/agents/agents-rule-of-two.md` 및 `.cursor/rules/agents-rule-of-two.mdc` 를 반드시 참고한다.
+  - 세 가지 속성([A] 신뢰할 수 없는 입력, [B] 민감한 데이터, [C] 상태 변경/외부 통신) 중 최대 두 가지만 허용.
+  - 세 가지가 모두 필요한 경우 새로운 세션 또는 인간 감독 메커니즘 도입.
 - 네트워크 설치, 포트 바인딩, 대규모 삭제 등은 승인 필요.
 - 비밀/토큰은 커밋 금지. 필요한 값은 `.env.example` 에만 문서화.
 
