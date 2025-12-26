@@ -1,3 +1,8 @@
+---
+trigger: model_decision
+description: Apply when writing or refactoring React/TypeScript code to ensure code quality (Readability, Predictability, Cohesion, Coupling)
+---
+
 # AGENTS – Frontend Code Quality
 
 In this project, "good frontend code" means **code that is easy to change**.

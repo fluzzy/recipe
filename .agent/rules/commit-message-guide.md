@@ -1,5 +1,6 @@
 ---
 trigger: always_on
+description: Commit message guidelines for Korean language
 ---
 
 ## Commit Message Guidelines

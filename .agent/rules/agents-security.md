@@ -1,3 +1,8 @@
+---
+trigger: model_decision
+description: Apply when designing AI agent features or handling untrusted inputs (Agents Rule of Two, prompt injection defense)
+---
+
 # AGENTS – Agents Rule of Two
 
 This document defines AI agent security design rules based on **Meta's Agents Rule of Two** framework.
