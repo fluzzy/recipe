@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import { NextIntlClientProvider } from 'next-intl';
 import { getLocale, getMessages, setRequestLocale } from 'next-intl/server';
+import { GoogleAdsenseScript } from '~/components/common/GoogleAdsenseScript';
 import { ThemeProvider } from '~/components/theme/theme-provider';
 import { Toaster } from '~/components/ui/toaster';
 import { routing } from '~/i18n/routing';
@@ -44,6 +45,7 @@ export default async function RootLayout({ children }: Props) {
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <GoogleAdsenseScript />
         <StackProvider app={stackServerApp}>
           <NextIntlClientProvider messages={messages} locale={locale}>
             <ThemeProvider
