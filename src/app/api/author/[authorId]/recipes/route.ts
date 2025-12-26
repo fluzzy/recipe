@@ -1,6 +1,6 @@
-import { Prisma } from '@prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
 import { STATUS_CODE } from '~/constants/api';
+import { Prisma } from '~/generated/prisma';
 import prisma from '~/lib/prisma';
 import { recipeSelect } from '~/lib/prisma/index';
 import { ErrorResponse } from '../../../lib/common';

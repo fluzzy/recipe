@@ -1,7 +1,7 @@
-import { Prisma } from '@prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
 import { STATUS_CODE } from '~/constants/api';
 import { SearchQueryKey, SearchTabKey, SearchTabValue } from '~/constants/key';
+import { Prisma } from '~/generated/prisma';
 import prisma from '~/lib/prisma';
 import { authorInclude, recipeSelect } from '~/lib/prisma/index';
 import { searchSchema } from '~/utils/validation/search';

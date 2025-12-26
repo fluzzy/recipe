@@ -1,7 +1,7 @@
 'use server';
 
 import { neon } from '@neondatabase/serverless';
-import type { UserRole } from '@prisma/client';
+import type { UserRole } from '~/generated/prisma';
 
 export type UserDetails = {
   raw_json: {
